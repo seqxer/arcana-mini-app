@@ -256,6 +256,19 @@ select {
   position: relative;
 }
 
+/* ОБЩЕЕ ИЗОБРАЖЕНИЕ РУБАШКИ */
+
+.card-back-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  border-radius: inherit;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
 /* КОЛОДА */
 
 .deck-stack {
@@ -273,7 +286,7 @@ select {
   inset: 0;
   border-radius: 9px;
   border: 1px solid #c5a9c8;
-  background: url('./FATE_card_back.png') center / 100% 100% no-repeat;
+  background: linear-gradient(145deg, #49334f, #211727);
   box-shadow: 0 8px 18px #100b15aa;
 }
 
@@ -291,13 +304,9 @@ select {
   z-index: 1;
   border-radius: 9px;
   border: 1px solid #d5b9d6;
-  background: url('./FATE_card_back.png') center / 100% 100% no-repeat;
+  background: #30203d;
   box-shadow: 0 8px 18px #100b15aa;
-}
-
-/* Убираем старый декоративный символ на рубашке */
-.deck-back span {
-  display: none;
+  overflow: hidden;
 }
 
 /* ВЕЕР */
@@ -322,7 +331,7 @@ select {
   min-width: 0;
   border-radius: 7px;
   border: 1px solid #d5b9d6;
-  background: url('./FATE_card_back.png') center / 100% 100% no-repeat;
+  background: #30203d;
   box-shadow: 0 7px 16px #100b15bb;
   cursor: pointer;
   position: relative;
@@ -333,6 +342,11 @@ select {
     opacity .3s;
   overflow: hidden;
   padding: 0;
+}
+
+.fan-card .card-back-art {
+  position: absolute;
+  inset: 0;
 }
 
 .fan-card:nth-child(1) {
@@ -373,6 +387,8 @@ select {
   filter: brightness(1.3);
 }
 
+/* ВЫБРАННЫЕ ЗАКРЫТЫЕ КАРТЫ */
+
 .picked-tray {
   display: flex;
   justify-content: center;
@@ -388,9 +404,10 @@ select {
   height: auto;
   border: 1px solid #d5b9d6;
   border-radius: 5px;
-  background: url('./FATE_card_back.png') center / 100% 100% no-repeat;
+  background: #30203d;
   box-shadow: 0 5px 12px #100b15aa;
   position: relative;
+  overflow: hidden;
   animation: pickIn .42s cubic-bezier(.2,.8,.2,1);
 }
 
@@ -659,7 +676,14 @@ select {
 
     <div id="deckArea">
       <div class="deck-stack" id="deckStack">
-        <div class="deck-back"><span>✦</span></div>
+        <div class="deck-back">
+          <img
+            class="card-back-art"
+            src="./FATE_card_back.png?v=2"
+            alt="Рубашка карт FATE.exe"
+            onerror="this.style.display='none'; document.getElementById('deckStatus').textContent='Не найдена FATE_card_back.png — проверь имя файла в GitHub';"
+          >
+        </div>
       </div>
 
       <p class="muted" style="text-align:center">
@@ -731,6 +755,7 @@ tg?.ready();
 tg?.expand();
 
 const ZIP_URL = './FATE_Rider_Waite_78_cards.zip';
+const BACK_URL = './FATE_card_back.png?v=2';
 
 const cardFiles = [
   '00_Fool.jpg',
@@ -820,6 +845,35 @@ function cardName(file) {
   return m
     ? `${rankRu[+m[2]]} ${suitRu[m[1]]}`
     : file;
+}
+
+/* Создаёт элемент с настоящим изображением рубашки */
+function createCardBack(className) {
+  const card = document.createElement('div');
+  card.className = className;
+
+  const img = document.createElement('img');
+  img.className = 'card-back-art';
+  img.src = BACK_URL;
+  img.alt = 'Рубашка FATE.exe';
+  img.draggable = false;
+
+  img.onerror = () => {
+    card.style.background =
+      'linear-gradient(145deg, #49334f, #211727)';
+    img.remove();
+
+    const status = document.getElementById('deckStatus');
+
+    if (status) {
+      status.textContent =
+        'Не найдена FATE_card_back.png — проверь имя файла в GitHub';
+    }
+  };
+
+  card.appendChild(img);
+
+  return card;
 }
 
 let zipCards = {};
@@ -1074,6 +1128,22 @@ function renderFan() {
       `Вытянуть карту ${i+1}`
     );
 
+    const img = document.createElement('img');
+    img.className = 'card-back-art';
+    img.src = BACK_URL;
+    img.alt = '';
+    img.draggable = false;
+
+    img.onerror = () => {
+      img.remove();
+      el.style.background =
+        'linear-gradient(145deg, #49334f, #211727)';
+
+      document.getElementById('deckStatus').textContent =
+        'Не найдена FATE_card_back.png — проверь имя файла в GitHub';
+    };
+
+    el.appendChild(img);
     el.onclick = () => drawCard(el);
 
     fan.appendChild(el);
@@ -1108,9 +1178,7 @@ function drawCard(button) {
   });
 
   const tray = document.getElementById('pickedTray');
-
-  const back = document.createElement('div');
-  back.className = 'picked-back';
+  const back = createCardBack('picked-back');
 
   tray.appendChild(back);
 
