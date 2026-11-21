@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -348,7 +349,7 @@ input,textarea,select{
 </section>
 
 <section id="reading" class="page">
-  <button class="back" onclick="showPage('setup')">← Изменить вопрос</button>
+  <button class="back" onclick="exitToSpreads()">← Выйти и выбрать другой расклад</button>
   <div class="eyebrow" id="readingTopic"></div>
   <h1 id="readingTitle">Твой расклад</h1>
   <p class="muted" id="readingQuestion"></p>
@@ -583,17 +584,56 @@ let loadingPromise=null;
 let drawingLocked=false;
 
 function showPage(id,button){
+  const target=document.getElementById(id);
+  if(!target)return;
+
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  target.classList.add('active');
+
   document.querySelectorAll('.bottom button').forEach(b=>b.classList.remove('active'));
   if(button)button.classList.add('active');
   else{
     const map={home:0,tarot:1,meta:2,history:3};
-    if(map[id]!==undefined)document.querySelectorAll('.bottom button')[map[id]].classList.add('active');
+    if(map[id]!==undefined){
+      document.querySelectorAll('.bottom button')[map[id]].classList.add('active');
+    }
   }
+
   window.scrollTo(0,0);
   if(id==='history')renderHistory();
 }
+
+/* Выход из текущего расклада к выбору другого */
+function exitToSpreads(){
+  picked=[];
+  fanCards=[];
+  deck=[];
+  needed=3;
+  questionText='';
+  topicText='';
+  readingSaved=false;
+  drawingLocked=false;
+
+  document.getElementById('deckArea').classList.add('hidden');
+  document.getElementById('fanArea').classList.add('hidden');
+  document.getElementById('resultArea').classList.add('hidden');
+  document.getElementById('loadingScreen').classList.add('hidden');
+  document.getElementById('interpretation').classList.add('hidden');
+  document.getElementById('saveReading').classList.add('hidden');
+  document.getElementById('backToSummary').classList.add('hidden');
+
+  document.getElementById('pickedTray').innerHTML='';
+  document.getElementById('drawnGrid').innerHTML='';
+  document.getElementById('fan').innerHTML='';
+  document.getElementById('drawStatus').textContent='';
+  document.getElementById('deckStack').classList.remove('shuffling');
+
+  document.getElementById('saveReading').textContent='Сохранить расклад';
+  document.getElementById('sceneCaption').textContent='ЗАДАЙ ВОПРОС И СОСРЕДОТОЧЬСЯ';
+
+  showPage('spreads');
+}
+
 function chooseDeck(){showPage('spreads')}
 function selectSpread(id){
   spread=id;
