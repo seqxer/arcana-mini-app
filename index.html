@@ -5,450 +5,1334 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#100e13">
 <title>FATE.exe — твой личный оракул</title>
+
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
 <style>
-:root{--bg:#100e13;--panel:#1c1720;--plum:#30203d;--line:#49364f;--pink:#d99ab5;--muted:#b8aab5;--cream:#f5edf2}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--cream);font-family:Arial,sans-serif;padding:20px 16px calc(94px + env(safe-area-inset-bottom))}
-header{display:flex;justify-content:space-between;align-items:center;margin:5px 2px 30px}
-.logo{font-size:26px;font-weight:900;letter-spacing:4px}.version{font-size:9px;color:var(--pink);letter-spacing:1.5px}
-.page{display:none}.page.active{display:block}
-.hero{padding:26px 21px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,#30202e,#17131c 65%,#251824);margin-bottom:30px}
-.hero small,.eyebrow{color:var(--pink);letter-spacing:2px;font-size:10px}
-.hero h1{font-size:32px;line-height:1.1;margin:17px 0 12px}.hero p,.muted{color:var(--muted);font-size:13px;line-height:1.6}
-.section-title{font-size:11px;color:#a995a5;letter-spacing:2px;margin:22px 0 13px}
-.menu{display:grid;gap:11px}.item,.choice{background:var(--panel);border:1px solid #382b38;border-radius:15px;padding:18px;cursor:pointer}
-.item:active,.choice:active,.primary:active{transform:scale(.985)}
-.item h2{font-size:18px;margin:0 0 7px}.item p,.choice p{font-size:12px;color:var(--muted);margin:0;line-height:1.5}.emoji{font-size:24px;margin-bottom:12px}
-.back{color:var(--pink);border:0;background:none;padding:0;margin:0 0 22px;font-size:14px}
-h1{font-size:27px;margin:8px 0 10px}h2{font-size:19px}
-.choice{margin:11px 0}.choice h3{margin:0 0 7px;font-size:16px}
-.primary{display:block;width:100%;border:0;border-radius:13px;background:#d99ab5;color:#211722;font-weight:800;font-size:15px;padding:15px;margin:16px 0;cursor:pointer}
-.secondary{background:#28202d;color:var(--cream);border:1px solid var(--line)}
-input,textarea,select{width:100%;background:#1b1720;border:1px solid var(--line);border-radius:12px;color:var(--cream);padding:14px;font:14px Arial;margin:8px 0 12px}
-.bottom{position:fixed;z-index:5;bottom:0;left:0;width:100%;background:#17131a;border-top:1px solid #382b38;display:flex;justify-content:space-around;padding:13px 4px calc(17px + env(safe-area-inset-bottom))}
-.bottom button{color:#a99ba8;background:none;border:0;font-size:11px;padding:4px;cursor:pointer}.bottom button.active{color:#e5a1bd}
-.status{font-size:12px;color:var(--muted);min-height:18px;margin:8px 0}
-.table-scene{background:radial-gradient(ellipse at center,#49334f 0%,#30203d 60%,#211727 100%);border:1px solid #624967;border-radius:20px;padding:18px 12px 22px;min-height:340px;overflow:hidden;position:relative}
-.table-scene:before{content:"";position:absolute;inset:9px;border:1px solid #80648855;border-radius:14px;pointer-events:none}
-.scene-caption{text-align:center;color:#e5c9d8;font-size:11px;letter-spacing:2px;margin:5px 0 17px;position:relative}
-.deck-stack{width:105px;height:158px;margin:28px auto 24px;position:relative;cursor:pointer}
-.deck-stack:before,.deck-stack:after,.deck-back{content:"";position:absolute;inset:0;border-radius:9px;border:1px solid #c5a9c8;background:repeating-linear-gradient(45deg,#382542 0 5px,#30203d 5px 10px);box-shadow:0 8px 18px #100b15aa}
-.deck-stack:before{transform:translate(-5px,-4px) rotate(-5deg)}.deck-stack:after{transform:translate(4px,-2px) rotate(4deg)}
-.deck-back{z-index:1;display:grid;place-items:center;color:#e5c5dc;font-size:26px;background:radial-gradient(circle,#51385b,#24192d)}
-.deck-back span{border:1px solid #c5a9c8;border-radius:50%;width:65px;height:65px;display:grid;place-items:center}
-.fan{display:flex;justify-content:center;align-items:flex-end;gap:clamp(0px,1vw,6px);min-height:190px;padding:20px 2px 18px;position:relative;perspective:900px}
-.fan-card,.card-back{width:clamp(55px,16vw,82px);aspect-ratio:0.62;height:auto;flex:0 1 82px;max-height:142px;min-width:0;border-radius:7px;border:1px solid #d5b9d6;background:radial-gradient(ellipse at 50% 42%,#594064 0%,#382644 48%,#211729 100%);box-shadow:0 7px 16px #100b15bb,inset 0 0 0 3px #211729,inset 0 0 0 4px #94749a;cursor:pointer;position:relative;transform-origin:50% 100%;transition:transform .42s cubic-bezier(.2,.8,.2,1),filter .3s,opacity .3s;overflow:hidden}
-.fan-card:before,.card-back:before{content:"";position:absolute;inset:8px;border:1px solid #b99bc0;border-radius:3px;opacity:.85}
-.fan-card:after,.card-back:after{content:"✦";position:absolute;inset:0;display:grid;place-items:center;color:#ead4e8;font-size:clamp(18px,6vw,27px);text-shadow:0 0 12px #f1c6e7}
-.fan-card .back-label,.card-back .back-label{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:6px;letter-spacing:1px;color:#ead4e8}
-.fan-card:nth-child(1){transform:rotate(-15deg) translateY(13px)}.fan-card:nth-child(2){transform:rotate(-8deg) translateY(5px)}.fan-card:nth-child(3){transform:rotate(0)}.fan-card:nth-child(4){transform:rotate(8deg) translateY(5px)}.fan-card:nth-child(5){transform:rotate(15deg) translateY(13px)}
-.fan-card:hover{filter:brightness(1.15)}
-.fan-card.picked-now{transform:translateY(-30px) scale(1.1)!important;filter:brightness(1.3);box-shadow:0 0 0 2px #f0c6dc,0 0 25px #e6a7cb;opacity:.25;pointer-events:none}
-.fan-card:active{filter:brightness(1.3)}
-.picked-tray{display:flex;justify-content:center;align-items:center;gap:8px;min-height:90px;margin:5px 0 8px}
-.picked-back{width:clamp(34px,10vw,46px);aspect-ratio:.62;height:auto;border:1px solid #d5b9d6;border-radius:5px;background:radial-gradient(ellipse at 50% 42%,#594064,#211729);box-shadow:inset 0 0 0 2px #211729,inset 0 0 0 3px #94749a;position:relative;animation:pickIn .42s cubic-bezier(.2,.8,.2,1)}
-.picked-back:before{content:"";position:absolute;inset:4px;border:1px solid #b99bc0;border-radius:2px}
-.picked-back:after{content:"✦";position:absolute;inset:0;display:grid;place-items:center;color:#ead4e8;font-size:14px}
-@keyframes pickIn{0%{transform:translateY(-28px) rotate(-8deg) scale(.7);opacity:0}70%{transform:translateY(4px) rotate(2deg) scale(1.05)}100%{transform:translateY(0) rotate(0) scale(1);opacity:1}}
-.card-reveal{animation:cardReveal .65s cubic-bezier(.2,.75,.25,1) both;transform-style:preserve-3d}
-@keyframes cardReveal{0%{opacity:0;transform:translateY(24px) rotateY(90deg) scale(.85)}100%{opacity:1;transform:translateY(0) rotateY(0) scale(1)}}
-.drawn-grid{display:flex;justify-content:center;align-items:flex-start;gap:8px;flex-wrap:wrap;position:relative;padding:8px 0}
-.drawn{width:calc((100% - 24px)/3);max-width:115px;text-align:center;cursor:pointer}
-.drawn img{width:100%;aspect-ratio:3/5;object-fit:contain;border-radius:7px;box-shadow:0 7px 18px #100b15aa;background:#1b1420;transition:transform .35s,filter .25s}
-.drawn .card-name{font-size:10px;color:#f4e8f0;margin-top:6px;line-height:1.3}
-.drawn.selected img{outline:2px solid var(--pink);outline-offset:3px}
-.interpretation{background:#1d1721;border:1px solid var(--line);border-radius:14px;padding:17px;margin-top:17px;line-height:1.6;font-size:13px}
-.interpretation h3{margin:0 0 8px;color:#f1c6d9;font-size:16px}
-.history-entry{background:#1d1721;border:1px solid var(--line);border-radius:12px;padding:13px;margin:10px 0;font-size:13px}
-.hidden{display:none!important}
-@keyframes shuffle{0%{transform:translateY(0) rotate(0)}30%{transform:translateY(-12px) rotate(5deg)}65%{transform:translateY(4px) rotate(-5deg)}100%{transform:translateY(0) rotate(0)}}
-.shuffling{animation:shuffle .55s ease-in-out 3}
-@media(min-width:600px){body{max-width:600px;margin:auto}.drawn{max-width:130px}}
+:root {
+  --bg: #100e13;
+  --panel: #1c1720;
+  --plum: #30203d;
+  --line: #49364f;
+  --pink: #d99ab5;
+  --muted: #b8aab5;
+  --cream: #f5edf2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--cream);
+  font-family: Arial, sans-serif;
+  padding: 20px 16px calc(94px + env(safe-area-inset-bottom));
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px 2px 30px;
+}
+
+.logo {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 4px;
+}
+
+.version {
+  font-size: 9px;
+  color: var(--pink);
+  letter-spacing: 1.5px;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+.hero {
+  padding: 26px 21px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: linear-gradient(145deg, #30202e, #17131c 65%, #251824);
+  margin-bottom: 30px;
+}
+
+.hero small,
+.eyebrow {
+  color: var(--pink);
+  letter-spacing: 2px;
+  font-size: 10px;
+}
+
+.hero h1 {
+  font-size: 32px;
+  line-height: 1.1;
+  margin: 17px 0 12px;
+}
+
+.hero p,
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.section-title {
+  font-size: 11px;
+  color: #a995a5;
+  letter-spacing: 2px;
+  margin: 22px 0 13px;
+}
+
+.menu {
+  display: grid;
+  gap: 11px;
+}
+
+.item,
+.choice {
+  background: var(--panel);
+  border: 1px solid #382b38;
+  border-radius: 15px;
+  padding: 18px;
+  cursor: pointer;
+}
+
+.item:active,
+.choice:active,
+.primary:active {
+  transform: scale(.985);
+}
+
+.item h2 {
+  font-size: 18px;
+  margin: 0 0 7px;
+}
+
+.item p,
+.choice p {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.emoji {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.back {
+  color: var(--pink);
+  border: 0;
+  background: none;
+  padding: 0;
+  margin: 0 0 22px;
+  font-size: 14px;
+}
+
+h1 {
+  font-size: 27px;
+  margin: 8px 0 10px;
+}
+
+h2 {
+  font-size: 19px;
+}
+
+.choice {
+  margin: 11px 0;
+}
+
+.choice h3 {
+  margin: 0 0 7px;
+  font-size: 16px;
+}
+
+.primary {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 13px;
+  background: #d99ab5;
+  color: #211722;
+  font-weight: 800;
+  font-size: 15px;
+  padding: 15px;
+  margin: 16px 0;
+  cursor: pointer;
+}
+
+.secondary {
+  background: #28202d;
+  color: var(--cream);
+  border: 1px solid var(--line);
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  background: #1b1720;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--cream);
+  padding: 14px;
+  font: 14px Arial;
+  margin: 8px 0 12px;
+}
+
+.bottom {
+  position: fixed;
+  z-index: 5;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #17131a;
+  border-top: 1px solid #382b38;
+  display: flex;
+  justify-content: space-around;
+  padding: 13px 4px calc(17px + env(safe-area-inset-bottom));
+}
+
+.bottom button {
+  color: #a99ba8;
+  background: none;
+  border: 0;
+  font-size: 11px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.bottom button.active {
+  color: #e5a1bd;
+}
+
+.status {
+  font-size: 12px;
+  color: var(--muted);
+  min-height: 18px;
+  margin: 8px 0;
+}
+
+/* ИГРОВОЙ СТОЛ */
+
+.table-scene {
+  background:
+    radial-gradient(ellipse at center, #49334f 0%, #30203d 60%, #211727 100%);
+  border: 1px solid #624967;
+  border-radius: 20px;
+  padding: 18px 12px 22px;
+  min-height: 340px;
+  overflow: hidden;
+  position: relative;
+}
+
+.table-scene:before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border: 1px solid #80648855;
+  border-radius: 14px;
+  pointer-events: none;
+}
+
+.scene-caption {
+  text-align: center;
+  color: #e5c9d8;
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin: 5px 0 17px;
+  position: relative;
+}
+
+/* КОЛОДА */
+
+.deck-stack {
+  width: 105px;
+  height: 158px;
+  margin: 28px auto 24px;
+  position: relative;
+  cursor: pointer;
+}
+
+.deck-stack:before,
+.deck-stack:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9px;
+  border: 1px solid #c5a9c8;
+  background: url('./FATE_card_back.png') center / 100% 100% no-repeat;
+  box-shadow: 0 8px 18px #100b15aa;
+}
+
+.deck-stack:before {
+  transform: translate(-5px, -4px) rotate(-5deg);
+}
+
+.deck-stack:after {
+  transform: translate(4px, -2px) rotate(4deg);
+}
+
+.deck-back {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 9px;
+  border: 1px solid #d5b9d6;
+  background: url('./FATE_card_back.png') center / 100% 100% no-repeat;
+  box-shadow: 0 8px 18px #100b15aa;
+}
+
+/* Убираем старый декоративный символ на рубашке */
+.deck-back span {
+  display: none;
+}
+
+/* ВЕЕР */
+
+.fan {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: clamp(0px, 1vw, 6px);
+  min-height: 190px;
+  padding: 20px 2px 18px;
+  position: relative;
+  perspective: 900px;
+}
+
+.fan-card {
+  width: clamp(55px, 16vw, 82px);
+  aspect-ratio: 0.62;
+  height: auto;
+  flex: 0 1 82px;
+  max-height: 142px;
+  min-width: 0;
+  border-radius: 7px;
+  border: 1px solid #d5b9d6;
+  background: url('./FATE_card_back.png') center / 100% 100% no-repeat;
+  box-shadow: 0 7px 16px #100b15bb;
+  cursor: pointer;
+  position: relative;
+  transform-origin: 50% 100%;
+  transition:
+    transform .42s cubic-bezier(.2,.8,.2,1),
+    filter .3s,
+    opacity .3s;
+  overflow: hidden;
+  padding: 0;
+}
+
+.fan-card:nth-child(1) {
+  transform: rotate(-15deg) translateY(13px);
+}
+
+.fan-card:nth-child(2) {
+  transform: rotate(-8deg) translateY(5px);
+}
+
+.fan-card:nth-child(3) {
+  transform: rotate(0);
+}
+
+.fan-card:nth-child(4) {
+  transform: rotate(8deg) translateY(5px);
+}
+
+.fan-card:nth-child(5) {
+  transform: rotate(15deg) translateY(13px);
+}
+
+.fan-card:hover {
+  filter: brightness(1.15);
+}
+
+.fan-card.picked-now {
+  transform: translateY(-30px) scale(1.1) !important;
+  filter: brightness(1.3);
+  box-shadow:
+    0 0 0 2px #f0c6dc,
+    0 0 25px #e6a7cb;
+  opacity: .25;
+  pointer-events: none;
+}
+
+.fan-card:active {
+  filter: brightness(1.3);
+}
+
+.picked-tray {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  min-height: 90px;
+  margin: 5px 0 8px;
+}
+
+.picked-back {
+  width: clamp(34px, 10vw, 46px);
+  aspect-ratio: .62;
+  height: auto;
+  border: 1px solid #d5b9d6;
+  border-radius: 5px;
+  background: url('./FATE_card_back.png') center / 100% 100% no-repeat;
+  box-shadow: 0 5px 12px #100b15aa;
+  position: relative;
+  animation: pickIn .42s cubic-bezier(.2,.8,.2,1);
+}
+
+/* АНИМАЦИИ */
+
+@keyframes pickIn {
+  0% {
+    transform: translateY(-28px) rotate(-8deg) scale(.7);
+    opacity: 0;
+  }
+  70% {
+    transform: translateY(4px) rotate(2deg) scale(1.05);
+  }
+  100% {
+    transform: translateY(0) rotate(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.card-reveal {
+  animation: cardReveal .65s cubic-bezier(.2,.75,.25,1) both;
+  transform-style: preserve-3d;
+}
+
+@keyframes cardReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) rotateY(90deg) scale(.85);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateY(0) scale(1);
+  }
+}
+
+.drawn-grid {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+  position: relative;
+  padding: 8px 0;
+}
+
+.drawn {
+  width: calc((100% - 24px) / 3);
+  max-width: 115px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.drawn img {
+  width: 100%;
+  aspect-ratio: 3/5;
+  object-fit: contain;
+  border-radius: 7px;
+  box-shadow: 0 7px 18px #100b15aa;
+  background: #1b1420;
+  transition: transform .35s, filter .25s;
+}
+
+.drawn .card-name {
+  font-size: 10px;
+  color: #f4e8f0;
+  margin-top: 6px;
+  line-height: 1.3;
+}
+
+.drawn.selected img {
+  outline: 2px solid var(--pink);
+  outline-offset: 3px;
+}
+
+.interpretation {
+  background: #1d1721;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 17px;
+  margin-top: 17px;
+  line-height: 1.6;
+  font-size: 13px;
+}
+
+.interpretation h3 {
+  margin: 0 0 8px;
+  color: #f1c6d9;
+  font-size: 16px;
+}
+
+.history-entry {
+  background: #1d1721;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 13px;
+  margin: 10px 0;
+  font-size: 13px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@keyframes shuffle {
+  0% { transform: translateY(0) rotate(0); }
+  30% { transform: translateY(-12px) rotate(5deg); }
+  65% { transform: translateY(4px) rotate(-5deg); }
+  100% { transform: translateY(0) rotate(0); }
+}
+
+.shuffling {
+  animation: shuffle .55s ease-in-out 3;
+}
+
+@media (min-width: 600px) {
+  body {
+    max-width: 600px;
+    margin: auto;
+  }
+
+  .drawn {
+    max-width: 130px;
+  }
+}
 </style>
 </head>
+
 <body>
-<header><div class="logo">FATE.exe</div><div class="version">ТВОЙ ЛИЧНЫЙ ОРАКУЛ</div></header>
+
+<header>
+  <div class="logo">FATE.exe</div>
+  <div class="version">ТВОЙ ЛИЧНЫЙ ОРАКУЛ</div>
+</header>
+
 <main>
+
 <section id="home" class="page active">
- <div class="hero"><small>✦ ВСЕЛЕННАЯ НА СВЯЗИ</small><h1>Ну что,<br>посмотрим?</h1><p>Карты уже перемешаны. Осталось понять, зачем ты сюда пришёл.</p></div>
- <div class="section-title">ВЫБЕРИ СВОЙ СПОСОБ</div>
- <div class="menu">
-  <div class="item" onclick="showPage('tarot')"><div class="emoji">♠</div><h2>Таро</h2><p>Колоды, расклады и попытки разобраться в происходящем</p></div>
-  <div class="item" onclick="showPage('meta')"><div class="emoji">✧</div><h2>Метафорические карты</h2><p>Посмотрим, что там у тебя в подсознании</p></div>
-  <div class="item" onclick="showPage('history')"><div class="emoji">⌁</div><h2>Моя история</h2><p>Все твои предыдущие расклады</p></div>
- </div>
+  <div class="hero">
+    <small>✦ ВСЕЛЕННАЯ НА СВЯЗИ</small>
+    <h1>Ну что,<br>посмотрим?</h1>
+    <p>Карты уже перемешаны. Осталось понять, зачем ты сюда пришёл.</p>
+  </div>
+
+  <div class="section-title">ВЫБЕРИ СВОЙ СПОСОБ</div>
+
+  <div class="menu">
+    <div class="item" onclick="showPage('tarot')">
+      <div class="emoji">♠</div>
+      <h2>Таро</h2>
+      <p>Колоды, расклады и попытки разобраться в происходящем</p>
+    </div>
+
+    <div class="item" onclick="showPage('meta')">
+      <div class="emoji">✧</div>
+      <h2>Метафорические карты</h2>
+      <p>Посмотрим, что там у тебя в подсознании</p>
+    </div>
+
+    <div class="item" onclick="showPage('history')">
+      <div class="emoji">⌁</div>
+      <h2>Моя история</h2>
+      <p>Все твои предыдущие расклады</p>
+    </div>
+  </div>
 </section>
 
 <section id="tarot" class="page">
- <button class="back" onclick="showPage('home')">← Назад</button><h1>Таро</h1><p class="muted">Выбери колоду.</p>
- <div class="choice" onclick="chooseDeck('waite')"><h3>☾ Классический Уэйт</h3><p>78 карт · Классическая система</p></div>
- <div class="choice" onclick="alert('Авторская колода появится на следующем этапе')"><h3>✦ FATE.exe Original</h3><p>Авторская колода приложения</p></div>
+  <button class="back" onclick="showPage('home')">← Назад</button>
+  <h1>Таро</h1>
+  <p class="muted">Выбери колоду.</p>
+
+  <div class="choice" onclick="chooseDeck('waite')">
+    <h3>☾ Классический Уэйт</h3>
+    <p>78 карт · Классическая система</p>
+  </div>
+
+  <div class="choice" onclick="alert('Авторская колода появится на следующем этапе')">
+    <h3>✦ FATE.exe Original</h3>
+    <p>Авторская колода приложения</p>
+  </div>
 </section>
 
 <section id="spreads" class="page">
- <button class="back" onclick="showPage('tarot')">← Назад</button><h1>Выбери расклад</h1>
- <div class="choice" onclick="selectSpread('one')"><h3>Одна карта</h3><p>Короткий ответ или подсказка</p></div>
- <div class="choice" onclick="selectSpread('three')"><h3>Прошлое · Настоящее · Будущее</h3><p>Три карты для понимания ситуации</p></div>
- <div class="choice" onclick="selectSpread('love')"><h3>Отношения</h3><p>Ты · другой человек · что между вами · препятствие · перспектива</p></div>
- <div class="choice" onclick="selectSpread('hidden')"><h3>Скрытое</h3><p>За пределами очевидного · что игнорируется · что стоит увидеть</p></div>
- <div class="choice" onclick="selectSpread('celtic')"><h3>Кельтский крест</h3><p>Большой расклад на десять карт</p></div>
- <div class="choice" onclick="selectSpread('free')"><h3>Свободный расклад</h3><p>От одной до десяти карт</p></div>
+  <button class="back" onclick="showPage('tarot')">← Назад</button>
+  <h1>Выбери расклад</h1>
+
+  <div class="choice" onclick="selectSpread('one')">
+    <h3>Одна карта</h3>
+    <p>Короткий ответ или подсказка</p>
+  </div>
+
+  <div class="choice" onclick="selectSpread('three')">
+    <h3>Прошлое · Настоящее · Будущее</h3>
+    <p>Три карты для понимания ситуации</p>
+  </div>
+
+  <div class="choice" onclick="selectSpread('love')">
+    <h3>Отношения</h3>
+    <p>Ты · другой человек · что между вами · препятствие · перспектива</p>
+  </div>
+
+  <div class="choice" onclick="selectSpread('hidden')">
+    <h3>Скрытое</h3>
+    <p>За пределами очевидного · что игнорируется · что стоит увидеть</p>
+  </div>
+
+  <div class="choice" onclick="selectSpread('celtic')">
+    <h3>Кельтский крест</h3>
+    <p>Большой расклад на десять карт</p>
+  </div>
+
+  <div class="choice" onclick="selectSpread('free')">
+    <h3>Свободный расклад</h3>
+    <p>От одной до десяти карт</p>
+  </div>
 </section>
 
 <section id="setup" class="page">
- <button class="back" onclick="showPage('spreads')">← Назад</button><h1>О чём спросим?</h1>
- <p class="muted">Выбери тему или задай свой вопрос.</p>
- <select id="topic"><option>Любовь и отношения</option><option>Деньги и карьера</option><option>Я и моё состояние</option><option>Будущее</option><option>Мысли и намерения</option><option>Мой вопрос</option></select>
- <textarea id="question" rows="3" placeholder="Напиши вопрос (необязательно)"></textarea>
- <div id="freeCount" class="hidden"><label>Количество карт</label><select id="freeNumber"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></div>
- <button class="primary" onclick="startReading()">Начать расклад</button>
+  <button class="back" onclick="showPage('spreads')">← Назад</button>
+  <h1>О чём спросим?</h1>
+  <p class="muted">Выбери тему или задай свой вопрос.</p>
+
+  <select id="topic">
+    <option>Любовь и отношения</option>
+    <option>Деньги и карьера</option>
+    <option>Я и моё состояние</option>
+    <option>Будущее</option>
+    <option>Мысли и намерения</option>
+    <option>Мой вопрос</option>
+  </select>
+
+  <textarea id="question" rows="3" placeholder="Напиши вопрос (необязательно)"></textarea>
+
+  <div id="freeCount" class="hidden">
+    <label>Количество карт</label>
+    <select id="freeNumber">
+      <option>1</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+      <option>5</option>
+      <option>6</option>
+      <option>7</option>
+      <option>8</option>
+      <option>9</option>
+      <option>10</option>
+    </select>
+  </div>
+
+  <button class="primary" onclick="startReading()">Начать расклад</button>
 </section>
 
 <section id="reading" class="page">
- <button class="back" onclick="showPage('setup')">← Изменить вопрос</button>
- <div class="eyebrow" id="readingTopic"></div><h1 id="readingTitle">Твой расклад</h1>
- <p class="muted" id="readingQuestion"></p>
- <div class="status" id="deckStatus">Загружаю колоду…</div>
- <div class="table-scene">
-  <div class="scene-caption" id="sceneCaption">ЗАДАЙ ВОПРОС И СОСРЕДОТОЧЬСЯ</div>
-  <div id="deckArea">
-   <div class="deck-stack" id="deckStack"><div class="deck-back"><span>✦</span></div></div>
-   <p class="muted" style="text-align:center">Нажми на колоду, чтобы перемешать</p>
-   <button class="primary" onclick="shuffleDeck()">Перемешать карты</button>
+  <button class="back" onclick="showPage('setup')">← Изменить вопрос</button>
+
+  <div class="eyebrow" id="readingTopic"></div>
+  <h1 id="readingTitle">Твой расклад</h1>
+  <p class="muted" id="readingQuestion"></p>
+
+  <div class="status" id="deckStatus">Загружаю колоду…</div>
+
+  <div class="table-scene">
+    <div class="scene-caption" id="sceneCaption">
+      ЗАДАЙ ВОПРОС И СОСРЕДОТОЧЬСЯ
+    </div>
+
+    <div id="deckArea">
+      <div class="deck-stack" id="deckStack">
+        <div class="deck-back"><span>✦</span></div>
+      </div>
+
+      <p class="muted" style="text-align:center">
+        Нажми на колоду, чтобы перемешать
+      </p>
+
+      <button class="primary" onclick="shuffleDeck()">
+        Перемешать карты
+      </button>
+    </div>
+
+    <div id="fanArea" class="hidden">
+      <p class="muted" style="text-align:center">
+        Нажимай на карты, чтобы вытянуть их
+      </p>
+
+      <div class="fan" id="fan"></div>
+      <div class="status" id="drawStatus" style="text-align:center"></div>
+
+      <div class="picked-tray" id="pickedTray"
+           aria-label="Уже выбранные закрытые карты">
+      </div>
+    </div>
+
+    <div id="resultArea" class="hidden">
+      <div class="drawn-grid" id="drawnGrid"></div>
+    </div>
   </div>
-  <div id="fanArea" class="hidden">
-   <p class="muted" style="text-align:center">Нажимай на карты, чтобы вытянуть их</p>
-   <div class="fan" id="fan"></div>
-   <div class="status" id="drawStatus" style="text-align:center"></div>
-   <div class="picked-tray" id="pickedTray" aria-label="Уже выбранные закрытые карты"></div>
-  </div>
-  <div id="resultArea" class="hidden"><div class="drawn-grid" id="drawnGrid"></div></div>
- </div>
- <div id="interpretation" class="interpretation hidden"></div>
- <button id="backToSummary" class="primary secondary hidden" onclick="showSummary()">← Общий вывод расклада</button>
- <button id="saveReading" class="primary secondary hidden" onclick="finishReading()">Сохранить расклад</button>
+
+  <div id="interpretation" class="interpretation hidden"></div>
+
+  <button id="backToSummary"
+          class="primary secondary hidden"
+          onclick="showSummary()">
+    ← Общий вывод расклада
+  </button>
+
+  <button id="saveReading"
+          class="primary secondary hidden"
+          onclick="finishReading()">
+    Сохранить расклад
+  </button>
 </section>
 
-<section id="meta" class="page"><button class="back" onclick="showPage('home')">← Назад</button><h1>Метафорические карты</h1><p class="muted">Этот раздел появится на следующем этапе.</p></section>
-<section id="history" class="page"><button class="back" onclick="showPage('home')">← Назад</button><h1>Моя история</h1><div id="historyList"></div></section>
+<section id="meta" class="page">
+  <button class="back" onclick="showPage('home')">← Назад</button>
+  <h1>Метафорические карты</h1>
+  <p class="muted">Этот раздел появится на следующем этапе.</p>
+</section>
+
+<section id="history" class="page">
+  <button class="back" onclick="showPage('home')">← Назад</button>
+  <h1>Моя история</h1>
+  <div id="historyList"></div>
+</section>
+
 </main>
 
 <nav class="bottom">
- <button class="active" onclick="showPage('home',this)">⌂ Главная</button>
- <button onclick="showPage('tarot',this)">♠ Таро</button>
- <button onclick="showPage('meta',this)">✧ Карты</button>
- <button onclick="showPage('history',this)">♡ История</button>
+  <button class="active" onclick="showPage('home',this)">⌂ Главная</button>
+  <button onclick="showPage('tarot',this)">♠ Таро</button>
+  <button onclick="showPage('meta',this)">✧ Карты</button>
+  <button onclick="showPage('history',this)">♡ История</button>
 </nav>
 
 <script>
-const tg=window.Telegram?.WebApp;
+const tg = window.Telegram?.WebApp;
 tg?.ready();
 tg?.expand();
 
-const ZIP_URL='./FATE_Rider_Waite_78_cards.zip';
+const ZIP_URL = './FATE_Rider_Waite_78_cards.zip';
 
-const cardFiles=[
-'00_Fool.jpg','01_Magician.jpg','02_High_Priestess.jpg','03_Empress.jpg','04_Emperor.jpg','05_Hierophant.jpg','06_Lovers.jpg','07_Chariot.jpg','08_Strength.jpg','09_Hermit.jpg','10_Wheel_of_Fortune.jpg','11_Justice.jpg','12_Hanged_Man.jpg','13_Death.jpg','14_Temperance.jpg','15_Devil.jpg','16_Tower.jpg','17_Star.jpg','18_Moon.jpg','19_Sun.jpg','20_Judgement.jpg','21_World.jpg',
-...['Cups','Pents','Swords','Wands'].flatMap(s=>Array.from({length:14},(_,i)=>`${s}${String(i+1).padStart(2,'0')}.jpg`))
+const cardFiles = [
+  '00_Fool.jpg',
+  '01_Magician.jpg',
+  '02_High_Priestess.jpg',
+  '03_Empress.jpg',
+  '04_Emperor.jpg',
+  '05_Hierophant.jpg',
+  '06_Lovers.jpg',
+  '07_Chariot.jpg',
+  '08_Strength.jpg',
+  '09_Hermit.jpg',
+  '10_Wheel_of_Fortune.jpg',
+  '11_Justice.jpg',
+  '12_Hanged_Man.jpg',
+  '13_Death.jpg',
+  '14_Temperance.jpg',
+  '15_Devil.jpg',
+  '16_Tower.jpg',
+  '17_Star.jpg',
+  '18_Moon.jpg',
+  '19_Sun.jpg',
+  '20_Judgement.jpg',
+  '21_World.jpg',
+  ...['Cups','Pents','Swords','Wands'].flatMap(s =>
+    Array.from({length:14}, (_,i) =>
+      `${s}${String(i+1).padStart(2,'0')}.jpg`
+    )
+  )
 ];
 
-const cardNames={
-'00_Fool.jpg':'Шут',
-'01_Magician.jpg':'Маг',
-'02_High_Priestess.jpg':'Верховная Жрица',
-'03_Empress.jpg':'Императрица',
-'04_Emperor.jpg':'Император',
-'05_Hierophant.jpg':'Иерофант',
-'06_Lovers.jpg':'Влюблённые',
-'07_Chariot.jpg':'Колесница',
-'08_Strength.jpg':'Сила',
-'09_Hermit.jpg':'Отшельник',
-'10_Wheel_of_Fortune.jpg':'Колесо Фортуны',
-'11_Justice.jpg':'Справедливость',
-'12_Hanged_Man.jpg':'Повешенный',
-'13_Death.jpg':'Смерть',
-'14_Temperance.jpg':'Умеренность',
-'15_Devil.jpg':'Дьявол',
-'16_Tower.jpg':'Башня',
-'17_Star.jpg':'Звезда',
-'18_Moon.jpg':'Луна',
-'19_Sun.jpg':'Солнце',
-'20_Judgement.jpg':'Суд',
-'21_World.jpg':'Мир'
+const cardNames = {
+  '00_Fool.jpg':'Шут',
+  '01_Magician.jpg':'Маг',
+  '02_High_Priestess.jpg':'Верховная Жрица',
+  '03_Empress.jpg':'Императрица',
+  '04_Emperor.jpg':'Император',
+  '05_Hierophant.jpg':'Иерофант',
+  '06_Lovers.jpg':'Влюблённые',
+  '07_Chariot.jpg':'Колесница',
+  '08_Strength.jpg':'Сила',
+  '09_Hermit.jpg':'Отшельник',
+  '10_Wheel_of_Fortune.jpg':'Колесо Фортуны',
+  '11_Justice.jpg':'Справедливость',
+  '12_Hanged_Man.jpg':'Повешенный',
+  '13_Death.jpg':'Смерть',
+  '14_Temperance.jpg':'Умеренность',
+  '15_Devil.jpg':'Дьявол',
+  '16_Tower.jpg':'Башня',
+  '17_Star.jpg':'Звезда',
+  '18_Moon.jpg':'Луна',
+  '19_Sun.jpg':'Солнце',
+  '20_Judgement.jpg':'Суд',
+  '21_World.jpg':'Мир'
 };
 
-const suitRu={Cups:'Кубков',Pents:'Пентаклей',Swords:'Мечей',Wands:'Жезлов'};
-const rankRu=['','Туз','Двойка','Тройка','Четвёрка','Пятёрка','Шестёрка','Семёрка','Восьмёрка','Девятка','Десятка','Паж','Рыцарь','Королева','Король'];
-
-function cardName(file){
- if(cardNames[file])return cardNames[file];
- const m=file.match(/^(Cups|Pents|Swords|Wands)(\d\d)\.jpg$/);
- return m?`${rankRu[+m[2]]} ${suitRu[m[1]]}`:file;
-}
-
-let zipCards={},deck=[],picked=[],spread='three',needed=3,questionText='',topicText='',readingSaved=false;
-
-const spreadInfo={
- one:{n:1,title:'Одна карта',positions:['Главная подсказка']},
- three:{n:3,title:'Прошлое · Настоящее · Будущее',positions:['Прошлое','Настоящее','Будущее']},
- love:{n:5,title:'Отношения',positions:['Ты','Другой человек','Что между вами','Препятствие','Перспектива']},
- hidden:{n:3,title:'Скрытое',positions:['За пределами очевидного','Что игнорируется','Что стоит увидеть']},
- celtic:{n:10,title:'Кельтский крест',positions:['Суть ситуации','Препятствие','Основа','Недавнее прошлое','Возможное развитие','Ближайшее будущее','Твоя позиция','Внешние обстоятельства','Надежды и опасения','Итог']},
- free:{n:3,title:'Свободный расклад',positions:[]}
+const suitRu = {
+  Cups:'Кубков',
+  Pents:'Пентаклей',
+  Swords:'Мечей',
+  Wands:'Жезлов'
 };
 
-function showPage(id,button){
- document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
- document.getElementById(id).classList.add('active');
- document.querySelectorAll('.bottom button').forEach(b=>b.classList.remove('active'));
- if(button)button.classList.add('active');
- else{
-  const map={home:0,tarot:1,meta:2,history:3};
-  if(map[id]!==undefined)document.querySelectorAll('.bottom button')[map[id]].classList.add('active');
- }
- window.scrollTo(0,0);
- if(id==='history')renderHistory();
+const rankRu = [
+  '',
+  'Туз',
+  'Двойка',
+  'Тройка',
+  'Четвёрка',
+  'Пятёрка',
+  'Шестёрка',
+  'Семёрка',
+  'Восьмёрка',
+  'Девятка',
+  'Десятка',
+  'Паж',
+  'Рыцарь',
+  'Королева',
+  'Король'
+];
+
+function cardName(file) {
+  if (cardNames[file]) return cardNames[file];
+
+  const m = file.match(/^(Cups|Pents|Swords|Wands)(\d\d)\.jpg$/);
+
+  return m
+    ? `${rankRu[+m[2]]} ${suitRu[m[1]]}`
+    : file;
 }
 
-function chooseDeck(){
- showPage('spreads');
-}
+let zipCards = {};
+let deck = [];
+let picked = [];
+let spread = 'three';
+let needed = 3;
+let questionText = '';
+let topicText = '';
+let readingSaved = false;
 
-function selectSpread(id){
- spread=id;
- document.getElementById('freeCount').classList.toggle('hidden',id!=='free');
- showPage('setup');
-}
+const spreadInfo = {
+  one: {
+    n:1,
+    title:'Одна карта',
+    positions:['Главная подсказка']
+  },
 
-async function loadDeck(){
- if(Object.keys(zipCards).length)return true;
- const status=document.getElementById('deckStatus');
- status.textContent='Загружаю 78 карт из архива…';
- try{
-  if(!window.JSZip)throw new Error('Не загрузилась библиотека ZIP. Проверь интернет-соединение.');
-  const res=await fetch(ZIP_URL+'?v=1');
-  if(!res.ok)throw new Error('Не удалось найти ZIP. Проверь, что архив лежит рядом с index.html в GitHub.');
-  const blob=await res.blob();
-  const zip=await JSZip.loadAsync(blob);
-  for(const file of cardFiles){
-   const entry=zip.file(file);
-   if(!entry)throw new Error('В архиве не найдена карта '+file);
-   const data=await entry.async('base64');
-   zipCards[file]='data:image/jpeg;base64,'+data;
+  three: {
+    n:3,
+    title:'Прошлое · Настоящее · Будущее',
+    positions:['Прошлое','Настоящее','Будущее']
+  },
+
+  love: {
+    n:5,
+    title:'Отношения',
+    positions:[
+      'Ты',
+      'Другой человек',
+      'Что между вами',
+      'Препятствие',
+      'Перспектива'
+    ]
+  },
+
+  hidden: {
+    n:3,
+    title:'Скрытое',
+    positions:[
+      'За пределами очевидного',
+      'Что игнорируется',
+      'Что стоит увидеть'
+    ]
+  },
+
+  celtic: {
+    n:10,
+    title:'Кельтский крест',
+    positions:[
+      'Суть ситуации',
+      'Препятствие',
+      'Основа',
+      'Недавнее прошлое',
+      'Возможное развитие',
+      'Ближайшее будущее',
+      'Твоя позиция',
+      'Внешние обстоятельства',
+      'Надежды и опасения',
+      'Итог'
+    ]
+  },
+
+  free: {
+    n:3,
+    title:'Свободный расклад',
+    positions:[]
   }
-  status.textContent='Колода загружена: 78 из 78 карт';
-  return true;
- }catch(e){
-  status.textContent='Ошибка загрузки: '+e.message;
-  return false;
- }
+};
+
+function showPage(id, button) {
+  document.querySelectorAll('.page').forEach(p =>
+    p.classList.remove('active')
+  );
+
+  document.getElementById(id).classList.add('active');
+
+  document.querySelectorAll('.bottom button').forEach(b =>
+    b.classList.remove('active')
+  );
+
+  if (button) {
+    button.classList.add('active');
+  } else {
+    const map = {
+      home:0,
+      tarot:1,
+      meta:2,
+      history:3
+    };
+
+    if (map[id] !== undefined) {
+      document.querySelectorAll('.bottom button')[map[id]]
+        .classList.add('active');
+    }
+  }
+
+  window.scrollTo(0,0);
+
+  if (id === 'history') renderHistory();
 }
 
-async function startReading(){
- topicText=document.getElementById('topic').value;
- questionText=document.getElementById('question').value.trim();
- const info=spreadInfo[spread];
- needed=spread==='free'?Number(document.getElementById('freeNumber').value):info.n;
- if(spread==='free')info.positions=Array.from({length:needed},(_,i)=>`Карта ${i+1}`);
- picked=[];
- readingSaved=false;
- document.getElementById('readingTopic').textContent=topicText.toUpperCase();
- document.getElementById('readingTitle').textContent=info.title;
- document.getElementById('readingQuestion').textContent=questionText?`«${questionText}»`:'Без конкретного вопроса';
- document.getElementById('deckArea').classList.remove('hidden');
- document.getElementById('fanArea').classList.add('hidden');
- document.getElementById('resultArea').classList.add('hidden');
- document.getElementById('interpretation').classList.add('hidden');
- document.getElementById('saveReading').classList.add('hidden');
- document.getElementById('backToSummary').classList.add('hidden');
- document.getElementById('saveReading').textContent='Сохранить расклад';
- document.getElementById('pickedTray').innerHTML='';
- showPage('reading');
- await loadDeck();
+function chooseDeck() {
+  showPage('spreads');
 }
 
-function shuffleDeck(){
- if(Object.keys(zipCards).length!==78){
-  loadDeck().then(ok=>{if(ok)shuffleDeck()});
-  return;
- }
- deck=[...cardFiles].sort(()=>Math.random()-.5);
- picked=[];
- document.getElementById('deckStack').classList.add('shuffling');
- document.getElementById('sceneCaption').textContent='ПЕРЕМЕШИВАЕМ';
- setTimeout(()=>{
-  document.getElementById('deckArea').classList.add('hidden');
-  document.getElementById('fanArea').classList.remove('hidden');
-  document.getElementById('sceneCaption').textContent='ВЫБЕРИ КАРТЫ';
-  renderFan();
- },1650);
+function selectSpread(id) {
+  spread = id;
+
+  document.getElementById('freeCount')
+    .classList.toggle('hidden', id !== 'free');
+
+  showPage('setup');
 }
 
-function renderFan(){
- const fan=document.getElementById('fan');
- fan.innerHTML='';
- const count=Math.min(5,deck.length);
- for(let i=0;i<count;i++){
-  const el=document.createElement('button');
-  el.className='fan-card';
-  el.type='button';
-  el.setAttribute('aria-label',`Вытянуть карту ${i+1}`);
-  el.innerHTML='<span class="back-label">FATE.exe</span>';
-  el.onclick=()=>drawCard(el);
-  fan.appendChild(el);
- }
- updateDrawProgress();
+async function loadDeck() {
+  if (Object.keys(zipCards).length) return true;
+
+  const status = document.getElementById('deckStatus');
+  status.textContent = 'Загружаю 78 карт из архива…';
+
+  try {
+    if (!window.JSZip) {
+      throw new Error('Не загрузилась библиотека ZIP. Проверь интернет-соединение.');
+    }
+
+    const res = await fetch(ZIP_URL + '?v=1');
+
+    if (!res.ok) {
+      throw new Error('Не удалось найти ZIP. Проверь, что архив лежит рядом с index.html в GitHub.');
+    }
+
+    const blob = await res.blob();
+    const zip = await JSZip.loadAsync(blob);
+
+    for (const file of cardFiles) {
+      const entry = zip.file(file);
+
+      if (!entry) {
+        throw new Error('В архиве не найдена карта ' + file);
+      }
+
+      const data = await entry.async('base64');
+
+      zipCards[file] = 'data:image/jpeg;base64,' + data;
+    }
+
+    status.textContent = 'Колода загружена: 78 из 78 карт';
+
+    return true;
+
+  } catch (e) {
+    status.textContent = 'Ошибка загрузки: ' + e.message;
+    return false;
+  }
 }
 
-function updateDrawProgress(){
- document.getElementById('drawStatus').textContent=`Выбрано ${picked.length} из ${needed}`;
+async function startReading() {
+  topicText = document.getElementById('topic').value;
+  questionText = document.getElementById('question').value.trim();
+
+  const info = spreadInfo[spread];
+
+  needed = spread === 'free'
+    ? Number(document.getElementById('freeNumber').value)
+    : info.n;
+
+  if (spread === 'free') {
+    info.positions = Array.from(
+      {length:needed},
+      (_,i) => `Карта ${i+1}`
+    );
+  }
+
+  picked = [];
+  readingSaved = false;
+
+  document.getElementById('readingTopic').textContent =
+    topicText.toUpperCase();
+
+  document.getElementById('readingTitle').textContent =
+    info.title;
+
+  document.getElementById('readingQuestion').textContent =
+    questionText
+      ? `«${questionText}»`
+      : 'Без конкретного вопроса';
+
+  document.getElementById('deckArea').classList.remove('hidden');
+  document.getElementById('fanArea').classList.add('hidden');
+  document.getElementById('resultArea').classList.add('hidden');
+
+  document.getElementById('interpretation').classList.add('hidden');
+  document.getElementById('saveReading').classList.add('hidden');
+  document.getElementById('backToSummary').classList.add('hidden');
+
+  document.getElementById('saveReading').textContent =
+    'Сохранить расклад';
+
+  document.getElementById('pickedTray').innerHTML = '';
+
+  document.getElementById('deckStack').classList.remove('shuffling');
+
+  showPage('reading');
+
+  await loadDeck();
 }
 
-function drawCard(button){
- if(picked.length>=needed||!button||button.classList.contains('picked-now'))return;
+function shuffleDeck() {
+  if (Object.keys(zipCards).length !== 78) {
+    loadDeck().then(ok => {
+      if (ok) shuffleDeck();
+    });
+    return;
+  }
 
- button.classList.add('picked-now');
- button.disabled=true;
+  deck = [...cardFiles].sort(() => Math.random() - .5);
+  picked = [];
 
- const file=deck.pop();
- const reversed=Math.random()<.15;
- picked.push({file,reversed});
+  document.getElementById('deckStack')
+    .classList.add('shuffling');
 
- const tray=document.getElementById('pickedTray');
- const back=document.createElement('div');
- back.className='picked-back';
- tray.appendChild(back);
+  document.getElementById('sceneCaption').textContent =
+    'ПЕРЕМЕШИВАЕМ';
 
- updateDrawProgress();
+  setTimeout(() => {
+    document.getElementById('deckArea').classList.add('hidden');
+    document.getElementById('fanArea').classList.remove('hidden');
 
- if(picked.length===needed){
-  document.getElementById('sceneCaption').textContent='КАРТЫ ВЫБРАНЫ';
-  setTimeout(()=>{
-   document.getElementById('fanArea').classList.add('hidden');
-   revealCards();
-  },420);
- }
+    document.getElementById('sceneCaption').textContent =
+      'ВЫБЕРИ КАРТЫ';
+
+    renderFan();
+
+  }, 1650);
 }
 
-function revealCards(){
- document.getElementById('resultArea').classList.remove('hidden');
- document.getElementById('sceneCaption').textContent='ТВОИ КАРТЫ';
+function renderFan() {
+  const fan = document.getElementById('fan');
+  fan.innerHTML = '';
 
- const grid=document.getElementById('drawnGrid');
- grid.innerHTML='';
+  const count = Math.min(5, deck.length);
 
- picked.forEach((card,i)=>{
-  const wrap=document.createElement('div');
-  wrap.className='drawn';
-  wrap.innerHTML=`<img alt=""><div class="card-name">${spreadInfo[spread].positions[i]}<br>${cardName(card.file)}${card.reversed?' · перевёрнутая':''}</div>`;
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('button');
 
-  const img=wrap.querySelector('img');
-  img.src=zipCards[card.file];
-  img.classList.add('card-reveal');
-  img.style.animationDelay=(i*.12)+'s';
+    el.className = 'fan-card';
+    el.type = 'button';
 
-  if(card.reversed)img.style.transform='rotate(180deg)';
+    el.setAttribute(
+      'aria-label',
+      `Вытянуть карту ${i+1}`
+    );
 
-  wrap.onclick=()=>showInterpretation(i);
-  grid.appendChild(wrap);
- });
+    el.onclick = () => drawCard(el);
 
- document.getElementById('saveReading').classList.remove('hidden');
- document.getElementById('backToSummary').classList.add('hidden');
+    fan.appendChild(el);
+  }
 
- showSummary();
+  updateDrawProgress();
 }
 
-function showSummary(){
- document.querySelectorAll('.drawn').forEach(el=>el.classList.remove('selected'));
-
- const box=document.getElementById('interpretation');
- box.classList.remove('hidden');
- document.getElementById('backToSummary').classList.add('hidden');
-
- const info=spreadInfo[spread];
- const names=picked.map((c,i)=>`${info.positions[i]} — ${cardName(c.file)}${c.reversed?' (перевёрнутая)':''}`);
-
- const first=picked[0];
- const last=picked[picked.length-1];
-
- let synthesis='Расклад предлагает смотреть на ситуацию целиком: отдельные события здесь связаны между собой, а не существуют по отдельности.';
-
- if(picked.length>=3){
-  synthesis=`Начало расклада показывает, откуда растёт ситуация (${cardName(first.file)}), центральные карты раскрывают, что происходит сейчас, а последняя позиция подсказывает возможное направление (${cardName(last.file)}). Смысл не в гарантированном предсказании, а в том, чтобы увидеть связь между этими этапами.`;
- }
-
- box.innerHTML=`
-  <h3>Общий вывод расклада</h3>
-  <div class="eyebrow">${topicText.toUpperCase()}</div>
-  <p>${questionText?`Твой вопрос: «${questionText}». `:''}${synthesis}</p>
-  <p><b>Что выпало:</b><br>${names.join('<br>')}</p>
-  <p class="muted">Нажми на любую карту, чтобы открыть её отдельную трактовку. Общий вывод можно вернуть кнопкой под раскладом.</p>
- `;
+function updateDrawProgress() {
+  document.getElementById('drawStatus').textContent =
+    `Выбрано ${picked.length} из ${needed}`;
 }
 
-function showInterpretation(i){
- document.querySelectorAll('.drawn').forEach((el,j)=>el.classList.toggle('selected',i===j));
+function drawCard(button) {
+  if (
+    picked.length >= needed ||
+    !button ||
+    button.classList.contains('picked-now')
+  ) {
+    return;
+  }
 
- const c=picked[i];
- const name=cardName(c.file);
- const position=spreadInfo[spread].positions[i];
+  button.classList.add('picked-now');
+  button.disabled = true;
 
- const box=document.getElementById('interpretation');
- box.classList.remove('hidden');
- document.getElementById('backToSummary').classList.remove('hidden');
+  const file = deck.pop();
+  const reversed = Math.random() < .15;
 
- box.innerHTML=`
-  <h3>${name}${c.reversed?' · перевёрнутая':''}</h3>
-  <div class="eyebrow">${position.toUpperCase()}</div>
-  <p>В позиции «${position}» карта ${name.toLowerCase()} относится к теме «${topicText.toLowerCase()}». ${c.reversed?'Перевёрнутое положение предлагает обратить внимание на внутреннее напряжение, задержку или ситуацию, которая пока не проявляется открыто.':'Прямое положение подчёркивает активное проявление темы карты и возможность осознанно с ней взаимодействовать.'}</p>
-  <p class="muted">Это базовая трактовка текущей версии. Полные индивидуальные значения всех 78 карт и их сочетаний будут добавлены следующим этапом.</p>
- `;
+  picked.push({
+    file,
+    reversed
+  });
+
+  const tray = document.getElementById('pickedTray');
+
+  const back = document.createElement('div');
+  back.className = 'picked-back';
+
+  tray.appendChild(back);
+
+  updateDrawProgress();
+
+  if (picked.length === needed) {
+    document.getElementById('sceneCaption').textContent =
+      'КАРТЫ ВЫБРАНЫ';
+
+    setTimeout(() => {
+      document.getElementById('fanArea').classList.add('hidden');
+      revealCards();
+    }, 420);
+  }
 }
 
-function finishReading(){
- if(readingSaved)return;
+function revealCards() {
+  document.getElementById('resultArea').classList.remove('hidden');
 
- const history=JSON.parse(localStorage.getItem('fateHistory')||'[]');
+  document.getElementById('sceneCaption').textContent =
+    'ТВОИ КАРТЫ';
 
- history.unshift({
-  date:new Date().toLocaleString('ru-RU'),
-  topic:topicText,
-  question:questionText,
-  spread:spreadInfo[spread].title,
-  cards:picked.map((c,i)=>({
-   name:cardName(c.file),
-   file:c.file,
-   reversed:c.reversed,
-   position:spreadInfo[spread].positions[i]
-  }))
- });
+  const grid = document.getElementById('drawnGrid');
+  grid.innerHTML = '';
 
- localStorage.setItem('fateHistory',JSON.stringify(history.slice(0,50)));
- readingSaved=true;
- document.getElementById('saveReading').textContent='Сохранено ✓';
+  picked.forEach((card, i) => {
+    const wrap = document.createElement('div');
+
+    wrap.className = 'drawn';
+
+    wrap.innerHTML = `
+      <img alt="">
+      <div class="card-name">
+        ${spreadInfo[spread].positions[i]}<br>
+        ${cardName(card.file)}
+        ${card.reversed ? ' · перевёрнутая' : ''}
+      </div>
+    `;
+
+    const img = wrap.querySelector('img');
+
+    img.src = zipCards[card.file];
+
+    img.classList.add('card-reveal');
+    img.style.animationDelay = (i * .12) + 's';
+
+    if (card.reversed) {
+      img.style.transform = 'rotate(180deg)';
+    }
+
+    wrap.onclick = () => showInterpretation(i);
+
+    grid.appendChild(wrap);
+  });
+
+  document.getElementById('saveReading').classList.remove('hidden');
+  document.getElementById('backToSummary').classList.add('hidden');
+
+  showSummary();
 }
 
-function renderHistory(){
- const list=document.getElementById('historyList');
- const history=JSON.parse(localStorage.getItem('fateHistory')||'[]');
+function showSummary() {
+  document.querySelectorAll('.drawn').forEach(el =>
+    el.classList.remove('selected')
+  );
 
- if(!history.length){
-  list.innerHTML='<div class="history-entry">Пока пусто ♡<p class="muted">Сделай первый расклад, и он появится здесь.</p></div>';
-  return;
- }
+  const box = document.getElementById('interpretation');
 
- list.innerHTML=history.map(h=>`
-  <div class="history-entry">
-   <b>${h.spread}</b>
-   <div class="muted">${h.date} · ${h.topic}</div>
-   <p>${h.cards.map(c=>c.name+(c.reversed?' ↕':'')).join(' · ')}</p>
-   ${h.question?`<div class="muted">«${h.question}»</div>`:''}
-  </div>
- `).join('');
+  box.classList.remove('hidden');
+
+  document.getElementById('backToSummary')
+    .classList.add('hidden');
+
+  const info = spreadInfo[spread];
+
+  const names = picked.map((c,i) =>
+    `${info.positions[i]} — ${cardName(c.file)}${c.reversed ? ' (перевёрнутая)' : ''}`
+  );
+
+  const first = picked[0];
+  const last = picked[picked.length-1];
+
+  let synthesis =
+    'Расклад предлагает смотреть на ситуацию целиком: отдельные события здесь связаны между собой, а не существуют по отдельности.';
+
+  if (picked.length >= 3) {
+    synthesis =
+      `Начало расклада показывает, откуда растёт ситуация (${cardName(first.file)}), центральные карты раскрывают, что происходит сейчас, а последняя позиция подсказывает возможное направление (${cardName(last.file)}). Смысл не в гарантированном предсказании, а в том, чтобы увидеть связь между этими этапами.`;
+  }
+
+  box.innerHTML = `
+    <h3>Общий вывод расклада</h3>
+    <div class="eyebrow">${topicText.toUpperCase()}</div>
+    <p>
+      ${questionText ? `Твой вопрос: «${questionText}». ` : ''}
+      ${synthesis}
+    </p>
+    <p>
+      <b>Что выпало:</b><br>
+      ${names.join('<br>')}
+    </p>
+    <p class="muted">
+      Нажми на любую карту, чтобы открыть её отдельную трактовку.
+      Общий вывод можно вернуть кнопкой под раскладом.
+    </p>
+  `;
+}
+
+function showInterpretation(i) {
+  document.querySelectorAll('.drawn').forEach((el,j) =>
+    el.classList.toggle('selected', i === j)
+  );
+
+  const c = picked[i];
+  const name = cardName(c.file);
+  const position = spreadInfo[spread].positions[i];
+
+  const box = document.getElementById('interpretation');
+
+  box.classList.remove('hidden');
+
+  document.getElementById('backToSummary')
+    .classList.remove('hidden');
+
+  box.innerHTML = `
+    <h3>${name}${c.reversed ? ' · перевёрнутая' : ''}</h3>
+
+    <div class="eyebrow">
+      ${position.toUpperCase()}
+    </div>
+
+    <p>
+      В позиции «${position}» карта ${name.toLowerCase()}
+      относится к теме «${topicText.toLowerCase()}».
+      ${c.reversed
+        ? 'Перевёрнутое положение предлагает обратить внимание на внутреннее напряжение, задержку или ситуацию, которая пока не проявляется открыто.'
+        : 'Прямое положение подчёркивает активное проявление темы карты и возможность осознанно с ней взаимодействовать.'
+      }
+    </p>
+
+    <p class="muted">
+      Это базовая трактовка текущей версии.
+      Полные индивидуальные значения всех 78 карт и их сочетаний
+      будут добавлены следующим этапом.
+    </p>
+  `;
+}
+
+function finishReading() {
+  if (readingSaved) return;
+
+  const history = JSON.parse(
+    localStorage.getItem('fateHistory') || '[]'
+  );
+
+  history.unshift({
+    date: new Date().toLocaleString('ru-RU'),
+    topic: topicText,
+    question: questionText,
+    spread: spreadInfo[spread].title,
+
+    cards: picked.map((c,i) => ({
+      name: cardName(c.file),
+      file: c.file,
+      reversed: c.reversed,
+      position: spreadInfo[spread].positions[i]
+    }))
+  });
+
+  localStorage.setItem(
+    'fateHistory',
+    JSON.stringify(history.slice(0,50))
+  );
+
+  readingSaved = true;
+
+  document.getElementById('saveReading').textContent =
+    'Сохранено ✓';
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+
+  const history = JSON.parse(
+    localStorage.getItem('fateHistory') || '[]'
+  );
+
+  if (!history.length) {
+    list.innerHTML = `
+      <div class="history-entry">
+        Пока пусто ♡
+        <p class="muted">
+          Сделай первый расклад, и он появится здесь.
+        </p>
+      </div>
+    `;
+
+    return;
+  }
+
+  list.innerHTML = history.map(h => `
+    <div class="history-entry">
+      <b>${h.spread}</b>
+
+      <div class="muted">
+        ${h.date} · ${h.topic}
+      </div>
+
+      <p>
+        ${h.cards.map(c =>
+          c.name + (c.reversed ? ' ↕' : '')
+        ).join(' · ')}
+      </p>
+
+      ${h.question
+        ? `<div class="muted">«${h.question}»</div>`
+        : ''
+      }
+    </div>
+  `).join('');
 }
 </script>
+
 </body>
 </html>
