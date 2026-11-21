@@ -6,483 +6,261 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#100e13">
 <title>FATE.exe — твой личный оракул</title>
-
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
 <style>
 :root {
-  --bg: #100e13;
-  --panel: #1c1720;
-  --plum: #30203d;
-  --line: #49364f;
-  --pink: #d99ab5;
-  --muted: #b8aab5;
-  --cream: #f5edf2;
+  --bg:#100e13;
+  --panel:#1c1720;
+  --plum:#30203d;
+  --line:#49364f;
+  --pink:#d99ab5;
+  --muted:#b8aab5;
+  --cream:#f5edf2;
 }
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--cream);
-  font-family: Arial, sans-serif;
-  padding: 20px 16px calc(94px + env(safe-area-inset-bottom));
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--cream);
+  font-family:Arial,sans-serif;
+  padding:20px 16px calc(94px + env(safe-area-inset-bottom));
 }
-
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 5px 2px 30px;
+header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin:5px 2px 30px;
 }
-
-.logo {
-  font-size: 26px;
-  font-weight: 900;
-  letter-spacing: 4px;
+.logo{font-size:26px;font-weight:900;letter-spacing:4px}
+.version{font-size:9px;color:var(--pink);letter-spacing:1.5px}
+.page{display:none}
+.page.active{display:block}
+.hero{
+  padding:26px 21px;border:1px solid var(--line);
+  border-radius:18px;
+  background:linear-gradient(145deg,#30202e,#17131c 65%,#251824);
+  margin-bottom:30px;
 }
-
-.version {
-  font-size: 9px;
-  color: var(--pink);
-  letter-spacing: 1.5px;
+.hero small,.eyebrow{
+  color:var(--pink);letter-spacing:2px;font-size:10px;
 }
-
-.page { display: none; }
-.page.active { display: block; }
-
-.hero {
-  padding: 26px 21px;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  background: linear-gradient(145deg, #30202e, #17131c 65%, #251824);
-  margin-bottom: 30px;
+.hero h1{font-size:32px;line-height:1.1;margin:17px 0 12px}
+.hero p,.muted{color:var(--muted);font-size:13px;line-height:1.6}
+.section-title{
+  font-size:11px;color:#a995a5;letter-spacing:2px;margin:22px 0 13px;
 }
-
-.hero small, .eyebrow {
-  color: var(--pink);
-  letter-spacing: 2px;
-  font-size: 10px;
+.menu{display:grid;gap:11px}
+.item,.choice{
+  background:var(--panel);border:1px solid #382b38;
+  border-radius:15px;padding:18px;cursor:pointer;
 }
-
-.hero h1 {
-  font-size: 32px;
-  line-height: 1.1;
-  margin: 17px 0 12px;
+.item:active,.choice:active,.primary:active{transform:scale(.985)}
+.item h2{font-size:18px;margin:0 0 7px}
+.item p,.choice p{
+  font-size:12px;color:var(--muted);margin:0;line-height:1.5;
 }
-
-.hero p, .muted {
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.6;
+.emoji{font-size:24px;margin-bottom:12px}
+.back{
+  color:var(--pink);border:0;background:none;padding:0;
+  margin:0 0 22px;font-size:14px;
 }
-
-.section-title {
-  font-size: 11px;
-  color: #a995a5;
-  letter-spacing: 2px;
-  margin: 22px 0 13px;
+h1{font-size:27px;margin:8px 0 10px}
+h2{font-size:19px}
+.choice{margin:11px 0}
+.choice h3{margin:0 0 7px;font-size:16px}
+.primary{
+  display:block;width:100%;border:0;border-radius:13px;
+  background:#d99ab5;color:#211722;font-weight:800;
+  font-size:15px;padding:15px;margin:16px 0;cursor:pointer;
 }
-
-.menu {
-  display: grid;
-  gap: 11px;
+.secondary{background:#28202d;color:var(--cream);border:1px solid var(--line)}
+input,textarea,select{
+  width:100%;background:#1b1720;border:1px solid var(--line);
+  border-radius:12px;color:var(--cream);padding:14px;
+  font:14px Arial;margin:8px 0 12px;
 }
-
-.item, .choice {
-  background: var(--panel);
-  border: 1px solid #382b38;
-  border-radius: 15px;
-  padding: 18px;
-  cursor: pointer;
+.bottom{
+  position:fixed;z-index:5;bottom:0;left:0;width:100%;
+  background:#17131a;border-top:1px solid #382b38;
+  display:flex;justify-content:space-around;
+  padding:13px 4px calc(17px + env(safe-area-inset-bottom));
 }
-
-.item:active, .choice:active, .primary:active {
-  transform: scale(.985);
+.bottom button{
+  color:#a99ba8;background:none;border:0;font-size:11px;
+  padding:4px;cursor:pointer;
 }
+.bottom button.active{color:#e5a1bd}
+.status{font-size:12px;color:var(--muted);min-height:18px;margin:8px 0}
+.hidden{display:none!important}
 
-.item h2 {
-  font-size: 18px;
-  margin: 0 0 7px;
+/* СТОЛ */
+.table-scene{
+  background:radial-gradient(ellipse at center,#49334f 0%,#30203d 60%,#211727 100%);
+  border:1px solid #624967;border-radius:20px;
+  padding:18px 12px 22px;min-height:340px;
+  overflow:hidden;position:relative;
 }
-
-.item p, .choice p {
-  font-size: 12px;
-  color: var(--muted);
-  margin: 0;
-  line-height: 1.5;
+.table-scene:before{
+  content:"";position:absolute;inset:9px;
+  border:1px solid #80648855;border-radius:14px;pointer-events:none;
 }
-
-.emoji {
-  font-size: 24px;
-  margin-bottom: 12px;
+.scene-caption{
+  text-align:center;color:#e5c9d8;font-size:11px;
+  letter-spacing:2px;margin:5px 0 17px;position:relative;
 }
-
-.back {
-  color: var(--pink);
-  border: 0;
-  background: none;
-  padding: 0;
-  margin: 0 0 22px;
-  font-size: 14px;
-}
-
-h1 {
-  font-size: 27px;
-  margin: 8px 0 10px;
-}
-
-h2 { font-size: 19px; }
-
-.choice { margin: 11px 0; }
-
-.choice h3 {
-  margin: 0 0 7px;
-  font-size: 16px;
-}
-
-.primary {
-  display: block;
-  width: 100%;
-  border: 0;
-  border-radius: 13px;
-  background: #d99ab5;
-  color: #211722;
-  font-weight: 800;
-  font-size: 15px;
-  padding: 15px;
-  margin: 16px 0;
-  cursor: pointer;
-}
-
-.secondary {
-  background: #28202d;
-  color: var(--cream);
-  border: 1px solid var(--line);
-}
-
-input, textarea, select {
-  width: 100%;
-  background: #1b1720;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  color: var(--cream);
-  padding: 14px;
-  font: 14px Arial;
-  margin: 8px 0 12px;
-}
-
-.bottom {
-  position: fixed;
-  z-index: 5;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: #17131a;
-  border-top: 1px solid #382b38;
-  display: flex;
-  justify-content: space-around;
-  padding: 13px 4px calc(17px + env(safe-area-inset-bottom));
-}
-
-.bottom button {
-  color: #a99ba8;
-  background: none;
-  border: 0;
-  font-size: 11px;
-  padding: 4px;
-  cursor: pointer;
-}
-
-.bottom button.active { color: #e5a1bd; }
-
-.status {
-  font-size: 12px;
-  color: var(--muted);
-  min-height: 18px;
-  margin: 8px 0;
-}
-
-/* ИГРОВОЙ СТОЛ */
-
-.table-scene {
-  background: radial-gradient(ellipse at center, #49334f 0%, #30203d 60%, #211727 100%);
-  border: 1px solid #624967;
-  border-radius: 20px;
-  padding: 18px 12px 22px;
-  min-height: 340px;
-  overflow: hidden;
-  position: relative;
-}
-
-.table-scene:before {
-  content: "";
-  position: absolute;
-  inset: 9px;
-  border: 1px solid #80648855;
-  border-radius: 14px;
-  pointer-events: none;
-}
-
-.scene-caption {
-  text-align: center;
-  color: #e5c9d8;
-  font-size: 11px;
-  letter-spacing: 2px;
-  margin: 5px 0 17px;
-  position: relative;
-}
-
-/* РУБАШКА КАРТЫ */
-
-.card-back-art {
-  display: block !important;
-  position: absolute !important;
-  inset: 0 !important;
-  z-index: 5 !important;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: none !important;
-  object-fit: fill !important;
-  border: 0 !important;
-  border-radius: inherit;
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-drag: none;
+.card-back-art{
+  display:block!important;position:absolute!important;inset:0!important;
+  z-index:5!important;width:100%!important;height:100%!important;
+  max-width:none!important;object-fit:fill!important;
+  border:0!important;border-radius:inherit;pointer-events:none;
+  user-select:none;-webkit-user-drag:none;
 }
 
 /* КОЛОДА */
-
-.deck-stack {
-  width: 105px;
-  height: 158px;
-  margin: 28px auto 24px;
-  position: relative;
-  cursor: pointer;
-  isolation: isolate;
+.deck-stack{
+  width:105px;height:158px;margin:28px auto 24px;
+  position:relative;cursor:pointer;isolation:isolate;
 }
-
-.deck-stack:before,
-.deck-stack:after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  border-radius: 9px;
-  border: 1px solid #c5a9c8;
-  background: linear-gradient(145deg, #49334f, #211727);
-  box-shadow: 0 8px 18px #100b15aa;
+.deck-stack:before,.deck-stack:after{
+  content:"";position:absolute;inset:0;z-index:0;
+  border-radius:9px;border:1px solid #c5a9c8;
+  background:linear-gradient(145deg,#49334f,#211727);
+  box-shadow:0 8px 18px #100b15aa;
 }
-
-.deck-stack:before {
-  transform: translate(-5px, -4px) rotate(-5deg);
+.deck-stack:before{transform:translate(-5px,-4px) rotate(-5deg)}
+.deck-stack:after{transform:translate(4px,-2px) rotate(4deg)}
+.deck-back{
+  position:absolute;inset:0;z-index:2;border-radius:9px;
+  border:1px solid #d5b9d6;background:#30203d;
+  box-shadow:0 8px 18px #100b15aa;overflow:hidden;isolation:isolate;
 }
+.deck-back .card-back-art{z-index:3!important}
 
-.deck-stack:after {
-  transform: translate(4px, -2px) rotate(4deg);
+/* ВЕЕР: ПЯТЬ ПОСТОЯННЫХ СЛОТОВ */
+.fan{
+  display:flex;justify-content:center;align-items:flex-end;
+  gap:clamp(0px,1vw,6px);min-height:190px;
+  padding:20px 2px 18px;position:relative;perspective:900px;
 }
-
-.deck-back {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  border-radius: 9px;
-  border: 1px solid #d5b9d6;
-  background: #30203d;
-  box-shadow: 0 8px 18px #100b15aa;
-  overflow: hidden;
-  isolation: isolate;
+.fan-card{
+  width:clamp(55px,16vw,82px);aspect-ratio:.62;
+  height:auto;flex:0 1 82px;max-height:142px;min-width:0;
+  border-radius:7px;border:1px solid #d5b9d6;
+  background:#30203d;box-shadow:0 7px 16px #100b15bb;
+  cursor:pointer;position:relative;transform-origin:50% 100%;
+  transition:transform .42s cubic-bezier(.2,.8,.2,1),filter .3s,box-shadow .3s;
+  overflow:hidden;padding:0;isolation:isolate;
+  -webkit-tap-highlight-color:transparent;
 }
-
-.deck-back .card-back-art {
-  z-index: 3 !important;
+.fan-card .card-back-art{z-index:2!important}
+.fan-card:nth-child(1){transform:rotate(-15deg) translateY(13px)}
+.fan-card:nth-child(2){transform:rotate(-8deg) translateY(5px)}
+.fan-card:nth-child(3){transform:rotate(0)}
+.fan-card:nth-child(4){transform:rotate(8deg) translateY(5px)}
+.fan-card:nth-child(5){transform:rotate(15deg) translateY(13px)}
+.fan-card.picked-now{
+  transform:translateY(-30px) scale(1.1)!important;
+  filter:brightness(1.25);
+  box-shadow:0 0 0 2px #f0c6dc,0 0 25px #e6a7cb;
+  z-index:4;
 }
-
-/* ВЕЕР */
-
-.fan {
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: clamp(0px, 1vw, 6px);
-  min-height: 190px;
-  padding: 20px 2px 18px;
-  position: relative;
-  perspective: 900px;
-}
-
-.fan-card {
-  width: clamp(55px, 16vw, 82px);
-  aspect-ratio: 0.62;
-  height: auto;
-  flex: 0 1 82px;
-  max-height: 142px;
-  min-width: 0;
-  border-radius: 7px;
-  border: 1px solid #d5b9d6;
-  background: #30203d;
-  box-shadow: 0 7px 16px #100b15bb;
-  cursor: pointer;
-  position: relative;
-  transform-origin: 50% 100%;
-  transition: transform .42s cubic-bezier(.2,.8,.2,1), filter .3s, opacity .3s;
-  overflow: hidden;
-  padding: 0;
-  isolation: isolate;
-}
-
-.fan-card .card-back-art {
-  z-index: 2 !important;
-}
-
-.fan-card:nth-child(1) { transform: rotate(-15deg) translateY(13px); }
-.fan-card:nth-child(2) { transform: rotate(-8deg) translateY(5px); }
-.fan-card:nth-child(3) { transform: rotate(0); }
-.fan-card:nth-child(4) { transform: rotate(8deg) translateY(5px); }
-.fan-card:nth-child(5) { transform: rotate(15deg) translateY(13px); }
-
-.fan-card:hover { filter: brightness(1.15); }
-
-.fan-card.picked-now {
-  transform: translateY(-30px) scale(1.1) !important;
-  filter: brightness(1.3);
-  box-shadow: 0 0 0 2px #f0c6dc, 0 0 25px #e6a7cb;
-  opacity: .25;
-  pointer-events: none;
-}
-
-.fan-card:active { filter: brightness(1.3); }
+.fan-card:disabled{cursor:default}
+.fan-card:focus{outline:none}
 
 /* ВЫБРАННЫЕ КАРТЫ */
+.picked-tray{
+  display:flex;justify-content:center;align-items:center;
+  gap:8px;min-height:90px;margin:5px 0 8px;flex-wrap:wrap;
+}
+.picked-back{
+  width:clamp(34px,10vw,46px);aspect-ratio:.62;height:auto;
+  border:1px solid #d5b9d6;border-radius:5px;
+  background:#30203d;box-shadow:0 5px 12px #100b15aa;
+  position:relative;overflow:hidden;isolation:isolate;
+  animation:pickIn .42s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes pickIn{
+  0%{transform:translateY(-28px) rotate(-8deg) scale(.7);opacity:0}
+  70%{transform:translateY(4px) rotate(2deg) scale(1.05)}
+  100%{transform:translateY(0) rotate(0) scale(1);opacity:1}
+}
+@keyframes shuffle{
+  0%{transform:translateY(0) rotate(0)}
+  30%{transform:translateY(-12px) rotate(5deg)}
+  65%{transform:translateY(4px) rotate(-5deg)}
+  100%{transform:translateY(0) rotate(0)}
+}
+.shuffling{animation:shuffle .55s ease-in-out 3}
 
-.picked-tray {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  min-height: 90px;
-  margin: 5px 0 8px;
+/* ОТКРЫТЫЕ КАРТЫ */
+.drawn-grid{
+  display:flex;justify-content:center;align-items:flex-start;
+  gap:9px;flex-wrap:wrap;position:relative;padding:8px 0;
+}
+.drawn{
+  width:calc((100% - 24px)/3);max-width:115px;
+  text-align:center;cursor:pointer;
+}
+.drawn img{
+  width:100%;aspect-ratio:3/5;object-fit:contain;
+  border-radius:7px;box-shadow:0 7px 18px #100b15aa;
+  background:#1b1420;transition:filter .25s;
+}
+.drawn.card-reveal{animation:cardReveal .65s cubic-bezier(.2,.75,.25,1) both}
+.drawn.reversed img{transform:rotate(180deg)}
+@keyframes cardReveal{
+  0%{opacity:0;transform:translateY(24px) rotateY(90deg) scale(.85)}
+  100%{opacity:1;transform:translateY(0) rotateY(0) scale(1)}
+}
+.drawn .card-name{
+  font-size:10px;color:#f4e8f0;margin-top:7px;line-height:1.4;
+}
+.drawn.selected img{outline:2px solid var(--pink);outline-offset:3px}
+.interpretation{
+  background:#1d1721;border:1px solid var(--line);
+  border-radius:14px;padding:17px;margin-top:17px;
+  line-height:1.65;font-size:13px;
+}
+.interpretation h3{margin:0 0 8px;color:#f1c6d9;font-size:18px}
+.interpretation h4{margin:17px 0 5px;color:#e7b4ca;font-size:13px}
+.interpretation p{margin:8px 0}
+.interpretation .muted{font-size:12px}
+.history-entry{
+  background:#1d1721;border:1px solid var(--line);
+  border-radius:12px;padding:13px;margin:10px 0;font-size:13px;
 }
 
-.picked-back {
-  width: clamp(34px, 10vw, 46px);
-  aspect-ratio: .62;
-  height: auto;
-  border: 1px solid #d5b9d6;
-  border-radius: 5px;
-  background: #30203d;
-  box-shadow: 0 5px 12px #100b15aa;
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  animation: pickIn .42s cubic-bezier(.2,.8,.2,1);
+/* ЭКРАН ЗАГРУЗКИ */
+.loading-panel{
+  min-height:270px;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;
+  padding:22px 12px;
 }
-
-.picked-back .card-back-art {
-  z-index: 2 !important;
+.loading-orbit{
+  width:65px;height:65px;border-radius:50%;
+  border:2px solid #725477;border-top-color:#e6a7cb;
+  animation:orbit 1.1s linear infinite;margin-bottom:23px;
 }
-
-/* АНИМАЦИИ */
-
-@keyframes pickIn {
-  0% { transform: translateY(-28px) rotate(-8deg) scale(.7); opacity: 0; }
-  70% { transform: translateY(4px) rotate(2deg) scale(1.05); }
-  100% { transform: translateY(0) rotate(0) scale(1); opacity: 1; }
+@keyframes orbit{to{transform:rotate(360deg)}}
+.loading-title{
+  font-size:20px;line-height:1.35;font-weight:700;
+  max-width:300px;margin-bottom:12px;
 }
-
-.card-reveal {
-  animation: cardReveal .65s cubic-bezier(.2,.75,.25,1) both;
-  transform-style: preserve-3d;
+.loading-copy{
+  color:#d1bdce;font-size:13px;line-height:1.65;
+  max-width:290px;
 }
-
-@keyframes cardReveal {
-  0% { opacity: 0; transform: translateY(24px) rotateY(90deg) scale(.85); }
-  100% { opacity: 1; transform: translateY(0) rotateY(0) scale(1); }
+.loading-progress{
+  width:80%;height:4px;border-radius:10px;
+  background:#55415b;margin-top:22px;overflow:hidden;
 }
-
-.drawn-grid {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 8px;
-  flex-wrap: wrap;
-  position: relative;
-  padding: 8px 0;
+.loading-progress-fill{
+  height:100%;width:0%;
+  background:#e5a1bd;border-radius:10px;transition:width .2s;
 }
+.loading-percent{font-size:11px;color:#d8b8cd;margin-top:9px}
 
-.drawn {
-  width: calc((100% - 24px) / 3);
-  max-width: 115px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.drawn img {
-  width: 100%;
-  aspect-ratio: 3/5;
-  object-fit: contain;
-  border-radius: 7px;
-  box-shadow: 0 7px 18px #100b15aa;
-  background: #1b1420;
-  transition: transform .35s, filter .25s;
-}
-
-.drawn .card-name {
-  font-size: 10px;
-  color: #f4e8f0;
-  margin-top: 6px;
-  line-height: 1.3;
-}
-
-.drawn.selected img {
-  outline: 2px solid var(--pink);
-  outline-offset: 3px;
-}
-
-.interpretation {
-  background: #1d1721;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 17px;
-  margin-top: 17px;
-  line-height: 1.6;
-  font-size: 13px;
-}
-
-.interpretation h3 {
-  margin: 0 0 8px;
-  color: #f1c6d9;
-  font-size: 16px;
-}
-
-.history-entry {
-  background: #1d1721;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 13px;
-  margin: 10px 0;
-  font-size: 13px;
-}
-
-.hidden { display: none !important; }
-
-@keyframes shuffle {
-  0% { transform: translateY(0) rotate(0); }
-  30% { transform: translateY(-12px) rotate(5deg); }
-  65% { transform: translateY(4px) rotate(-5deg); }
-  100% { transform: translateY(0) rotate(0); }
-}
-
-.shuffling { animation: shuffle .55s ease-in-out 3; }
-
-@media (min-width: 600px) {
-  body {
-    max-width: 600px;
-    margin: auto;
-  }
-  .drawn { max-width: 130px; }
+@media(min-width:600px){
+  body{max-width:600px;margin:auto}
+  .drawn{max-width:130px}
 }
 </style>
 </head>
@@ -494,14 +272,12 @@ input, textarea, select {
 </header>
 
 <main>
-
 <section id="home" class="page active">
   <div class="hero">
     <small>✦ ВСЕЛЕННАЯ НА СВЯЗИ</small>
     <h1>Ну что,<br>посмотрим?</h1>
     <p>Карты уже перемешаны. Осталось понять, зачем ты сюда пришёл.</p>
   </div>
-
   <div class="section-title">ВЫБЕРИ СВОЙ СПОСОБ</div>
   <div class="menu">
     <div class="item" onclick="showPage('tarot')">
@@ -509,13 +285,11 @@ input, textarea, select {
       <h2>Таро</h2>
       <p>Колоды, расклады и попытки разобраться в происходящем</p>
     </div>
-
     <div class="item" onclick="showPage('meta')">
       <div class="emoji">✧</div>
       <h2>Метафорические карты</h2>
       <p>Посмотрим, что там у тебя в подсознании</p>
     </div>
-
     <div class="item" onclick="showPage('history')">
       <div class="emoji">⌁</div>
       <h2>Моя история</h2>
@@ -528,12 +302,10 @@ input, textarea, select {
   <button class="back" onclick="showPage('home')">← Назад</button>
   <h1>Таро</h1>
   <p class="muted">Выбери колоду.</p>
-
   <div class="choice" onclick="chooseDeck('waite')">
     <h3>☾ Классический Уэйт</h3>
     <p>78 карт · Классическая система</p>
   </div>
-
   <div class="choice" onclick="alert('Авторская колода появится на следующем этапе')">
     <h3>✦ FATE.exe Original</h3>
     <p>Авторская колода приложения</p>
@@ -543,35 +315,23 @@ input, textarea, select {
 <section id="spreads" class="page">
   <button class="back" onclick="showPage('tarot')">← Назад</button>
   <h1>Выбери расклад</h1>
-
   <div class="choice" onclick="selectSpread('one')">
-    <h3>Одна карта</h3>
-    <p>Короткий ответ или подсказка</p>
+    <h3>Одна карта</h3><p>Короткий ответ или подсказка</p>
   </div>
-
   <div class="choice" onclick="selectSpread('three')">
-    <h3>Прошлое · Настоящее · Будущее</h3>
-    <p>Три карты для понимания ситуации</p>
+    <h3>Прошлое · Настоящее · Будущее</h3><p>Три карты для понимания ситуации</p>
   </div>
-
   <div class="choice" onclick="selectSpread('love')">
-    <h3>Отношения</h3>
-    <p>Ты · другой человек · что между вами · препятствие · перспектива</p>
+    <h3>Отношения</h3><p>Ты · другой человек · что между вами · препятствие · перспектива</p>
   </div>
-
   <div class="choice" onclick="selectSpread('hidden')">
-    <h3>Скрытое</h3>
-    <p>За пределами очевидного · что игнорируется · что стоит увидеть</p>
+    <h3>Скрытое</h3><p>За пределами очевидного · что игнорируется · что стоит увидеть</p>
   </div>
-
   <div class="choice" onclick="selectSpread('celtic')">
-    <h3>Кельтский крест</h3>
-    <p>Большой расклад на десять карт</p>
+    <h3>Кельтский крест</h3><p>Большой расклад на десять карт</p>
   </div>
-
   <div class="choice" onclick="selectSpread('free')">
-    <h3>Свободный расклад</h3>
-    <p>От одной до десяти карт</p>
+    <h3>Свободный расклад</h3><p>От одной до десяти карт</p>
   </div>
 </section>
 
@@ -579,7 +339,6 @@ input, textarea, select {
   <button class="back" onclick="showPage('spreads')">← Назад</button>
   <h1>О чём спросим?</h1>
   <p class="muted">Выбери тему или задай свой вопрос.</p>
-
   <select id="topic">
     <option>Любовь и отношения</option>
     <option>Деньги и карьера</option>
@@ -588,64 +347,61 @@ input, textarea, select {
     <option>Мысли и намерения</option>
     <option>Мой вопрос</option>
   </select>
-
   <textarea id="question" rows="3" placeholder="Напиши вопрос (необязательно)"></textarea>
-
   <div id="freeCount" class="hidden">
     <label>Количество карт</label>
     <select id="freeNumber">
       <option>1</option><option>2</option><option>3</option>
       <option>4</option><option>5</option><option>6</option>
-      <option>7</option><option>8</option><option>9</option>
-      <option>10</option>
+      <option>7</option><option>8</option><option>9</option><option>10</option>
     </select>
   </div>
-
   <button class="primary" onclick="startReading()">Начать расклад</button>
 </section>
 
 <section id="reading" class="page">
   <button class="back" onclick="showPage('setup')">← Изменить вопрос</button>
-
   <div class="eyebrow" id="readingTopic"></div>
   <h1 id="readingTitle">Твой расклад</h1>
   <p class="muted" id="readingQuestion"></p>
-
-  <div class="status" id="deckStatus">Загружаю колоду…</div>
+  <div class="status" id="deckStatus"></div>
 
   <div class="table-scene">
-    <div class="scene-caption" id="sceneCaption">
-      ЗАДАЙ ВОПРОС И СОСРЕДОТОЧЬСЯ
+    <div class="scene-caption" id="sceneCaption">ЗАДАЙ ВОПРОС И СОСРЕДОТОЧЬСЯ</div>
+
+    <div id="loadingArea" class="hidden">
+      <div class="loading-panel">
+        <div class="loading-orbit"></div>
+        <div class="loading-title">Сосредоточься на своём вопросе</div>
+        <div class="loading-copy">
+          Пока я собираю колоду из 78 карт, сформулируй то,
+          что действительно хочется узнать. Не торопись.
+          Мысленно удерживай свой вопрос — скоро начнём.
+        </div>
+        <div class="loading-progress">
+          <div class="loading-progress-fill" id="loadingFill"></div>
+        </div>
+        <div class="loading-percent" id="loadingPercent">Подготавливаю колоду…</div>
+      </div>
     </div>
 
     <div id="deckArea">
       <div class="deck-stack" id="deckStack">
         <div class="deck-back">
-          <img
-            class="card-back-art"
-            src="https://seqxer.github.io/arcana-mini-app/FATE_card_back.png?v=3"
-            alt="Рубашка карт FATE.exe"
-          >
+          <img class="card-back-art"
+               src="https://seqxer.github.io/arcana-mini-app/FATE_card_back.png?v=4"
+               alt="Рубашка FATE.exe">
         </div>
       </div>
-
-      <p class="muted" style="text-align:center">
-        Нажми на колоду, чтобы перемешать
-      </p>
-
-      <button class="primary" onclick="shuffleDeck()">
-        Перемешать карты
-      </button>
+      <p class="muted" style="text-align:center">Нажми на колоду, чтобы перемешать</p>
+      <button class="primary" onclick="shuffleDeck()">Перемешать карты</button>
     </div>
 
     <div id="fanArea" class="hidden">
-      <p class="muted" style="text-align:center">
-        Нажимай на карты, чтобы вытянуть их
-      </p>
-
+      <p class="muted" style="text-align:center">Нажимай на карты, чтобы вытянуть их</p>
       <div class="fan" id="fan"></div>
       <div class="status" id="drawStatus" style="text-align:center"></div>
-      <div class="picked-tray" id="pickedTray" aria-label="Уже выбранные закрытые карты"></div>
+      <div class="picked-tray" id="pickedTray"></div>
     </div>
 
     <div id="resultArea" class="hidden">
@@ -654,14 +410,8 @@ input, textarea, select {
   </div>
 
   <div id="interpretation" class="interpretation hidden"></div>
-
-  <button id="backToSummary" class="primary secondary hidden" onclick="showSummary()">
-    ← Общий вывод расклада
-  </button>
-
-  <button id="saveReading" class="primary secondary hidden" onclick="finishReading()">
-    Сохранить расклад
-  </button>
+  <button id="backToSummary" class="primary secondary hidden" onclick="showSummary()">← Общий вывод расклада</button>
+  <button id="saveReading" class="primary secondary hidden" onclick="finishReading()">Сохранить расклад</button>
 </section>
 
 <section id="meta" class="page">
@@ -675,7 +425,6 @@ input, textarea, select {
   <h1>Моя история</h1>
   <div id="historyList"></div>
 </section>
-
 </main>
 
 <nav class="bottom">
@@ -686,513 +435,780 @@ input, textarea, select {
 </nav>
 
 <script>
-const tg = window.Telegram?.WebApp;
+const tg=window.Telegram?.WebApp;
 tg?.ready();
 tg?.expand();
 
-const ZIP_URL = './FATE_Rider_Waite_78_cards.zip';
-const BACK_URL = 'https://seqxer.github.io/arcana-mini-app/FATE_card_back.png?v=3';
+const ZIP_URL='./FATE_Rider_Waite_78_cards.zip';
+const BACK_URL='https://seqxer.github.io/arcana-mini-app/FATE_card_back.png?v=4';
 
-const cardFiles = [
-  '00_Fool.jpg',
-  '01_Magician.jpg',
-  '02_High_Priestess.jpg',
-  '03_Empress.jpg',
-  '04_Emperor.jpg',
-  '05_Hierophant.jpg',
-  '06_Lovers.jpg',
-  '07_Chariot.jpg',
-  '08_Strength.jpg',
-  '09_Hermit.jpg',
-  '10_Wheel_of_Fortune.jpg',
-  '11_Justice.jpg',
-  '12_Hanged_Man.jpg',
-  '13_Death.jpg',
-  '14_Temperance.jpg',
-  '15_Devil.jpg',
-  '16_Tower.jpg',
-  '17_Star.jpg',
-  '18_Moon.jpg',
-  '19_Sun.jpg',
-  '20_Judgement.jpg',
-  '21_World.jpg',
-  ...['Cups','Pents','Swords','Wands'].flatMap(s =>
-    Array.from({length:14}, (_,i) =>
-      `${s}${String(i+1).padStart(2,'0')}.jpg`
-    )
-  )
+const majorNames=[
+'Шут','Маг','Верховная Жрица','Императрица','Император','Иерофант',
+'Влюблённые','Колесница','Сила','Отшельник','Колесо Фортуны',
+'Справедливость','Повешенный','Смерть','Умеренность','Дьявол',
+'Башня','Звезда','Луна','Солнце','Суд','Мир'
 ];
+const suitNames={Cups:'Кубков',Pents:'Пентаклей',Swords:'Мечей',Wands:'Жезлов'};
+const ranks=['','Туз','Двойка','Тройка','Четвёрка','Пятёрка','Шестёрка',
+'Семёрка','Восьмёрка','Девятка','Десятка','Паж','Рыцарь','Королева','Король'];
 
-const cardNames = {
-  '00_Fool.jpg':'Шут',
-  '01_Magician.jpg':'Маг',
-  '02_High_Priestess.jpg':'Верховная Жрица',
-  '03_Empress.jpg':'Императрица',
-  '04_Emperor.jpg':'Император',
-  '05_Hierophant.jpg':'Иерофант',
-  '06_Lovers.jpg':'Влюблённые',
-  '07_Chariot.jpg':'Колесница',
-  '08_Strength.jpg':'Сила',
-  '09_Hermit.jpg':'Отшельник',
-  '10_Wheel_of_Fortune.jpg':'Колесо Фортуны',
-  '11_Justice.jpg':'Справедливость',
-  '12_Hanged_Man.jpg':'Повешенный',
-  '13_Death.jpg':'Смерть',
-  '14_Temperance.jpg':'Умеренность',
-  '15_Devil.jpg':'Дьявол',
-  '16_Tower.jpg':'Башня',
-  '17_Star.jpg':'Звезда',
-  '18_Moon.jpg':'Луна',
-  '19_Sun.jpg':'Солнце',
-  '20_Judgement.jpg':'Суд',
-  '21_World.jpg':'Мир'
-};
+const cardFiles=[
+...Array.from({length:22},(_,i)=>`${String(i).padStart(2,'0')}_${[
+'Fool','Magician','High_Priestess','Empress','Emperor','Hierophant',
+'Lovers','Chariot','Strength','Hermit','Wheel_of_Fortune','Justice',
+'Hanged_Man','Death','Temperance','Devil','Tower','Star','Moon','Sun',
+'Judgement','World'][i]}.jpg`),
+...['Cups','Pents','Swords','Wands'].flatMap(s=>
+  Array.from({length:14},(_,i)=>`${s}${String(i+1).padStart(2,'0')}.jpg`)
+)];
 
-const suitRu = {
-  Cups:'Кубков',
-  Pents:'Пентаклей',
-  Swords:'Мечей',
-  Wands:'Жезлов'
-};
-
-const rankRu = [
-  '',
-  'Туз','Двойка','Тройка','Четвёрка','Пятёрка',
-  'Шестёрка','Семёрка','Восьмёрка','Девятка',
-  'Десятка','Паж','Рыцарь','Королева','Король'
-];
-
-function cardName(file) {
-  if (cardNames[file]) return cardNames[file];
-  const m = file.match(/^(Cups|Pents|Swords|Wands)(\d\d)\.jpg$/);
-  return m ? `${rankRu[+m[2]]} ${suitRu[m[1]]}` : file;
-}
-
-/* Создание рубашки с абсолютным адресом картинки */
-function createCardBack(className) {
-  const card = document.createElement('div');
-  card.className = className;
-
-  const img = document.createElement('img');
-  img.className = 'card-back-art';
-  img.src = BACK_URL;
-  img.alt = 'Рубашка FATE.exe';
-  img.draggable = false;
-
-  img.onerror = () => {
-    console.error('Не удалось загрузить рубашку:', BACK_URL);
-    const status = document.getElementById('deckStatus');
-    if (status) {
-      status.textContent = 'Ошибка загрузки рубашки FATE.exe';
-    }
-  };
-
-  card.appendChild(img);
-  return card;
-}
-
-let zipCards = {};
-let deck = [];
-let picked = [];
-let spread = 'three';
-let needed = 3;
-let questionText = '';
-let topicText = '';
-let readingSaved = false;
-
-const spreadInfo = {
-  one: {
-    n:1,
-    title:'Одна карта',
-    positions:['Главная подсказка']
-  },
-  three: {
-    n:3,
-    title:'Прошлое · Настоящее · Будущее',
-    positions:['Прошлое','Настоящее','Будущее']
-  },
-  love: {
-    n:5,
-    title:'Отношения',
-    positions:['Ты','Другой человек','Что между вами','Препятствие','Перспектива']
-  },
-  hidden: {
-    n:3,
-    title:'Скрытое',
-    positions:['За пределами очевидного','Что игнорируется','Что стоит увидеть']
-  },
-  celtic: {
-    n:10,
-    title:'Кельтский крест',
-    positions:[
-      'Суть ситуации','Препятствие','Основа','Недавнее прошлое',
-      'Возможное развитие','Ближайшее будущее','Твоя позиция',
-      'Внешние обстоятельства','Надежды и опасения','Итог'
-    ]
-  },
-  free: {
-    n:3,
-    title:'Свободный расклад',
-    positions:[]
+function cardName(file){
+  const major=Number(file.slice(0,2));
+  if(file.startsWith('0')||file.startsWith('1')){
+    if(file.match(/^\d\d_/)) return majorNames[major]||file;
   }
+  const m=file.match(/^(Cups|Pents|Swords|Wands)(\d\d)\.jpg$/);
+  return m?`${ranks[Number(m[2])]} ${suitNames[m[1]]}`:file;
+}
+
+/*
+  Значения карт:
+  для каждой карты заданы прямое и перевёрнутое значения,
+  теневая сторона и практический совет.
+*/
+const meanings={
+'00_Fool.jpg':[
+'Начало, свобода, любопытство и готовность попробовать неизвестное. Ты стоишь перед возможностью, для которой ещё нет готового плана.',
+'Импульсивность, наивность или страх сделать первый шаг. Можно либо слишком легко относиться к последствиям, либо отказываться от шанса из-за тревоги.',
+'Желание сбежать от ответственности под видом свободы.',
+'Разреши себе начать, но не отключай здравый смысл. Сделай первый небольшой шаг.'
+],
+'01_Magician.jpg':[
+'Инициатива, личная сила и умение соединить имеющиеся ресурсы. У тебя уже есть больше возможностей, чем кажется.',
+'Неуверенность в собственных способностях, распыление сил или попытка повлиять на ситуацию обходными способами.',
+'Манипуляция, обещания без действий и желание контролировать впечатление о себе.',
+'Перестань ждать идеального момента. Выбери один конкретный инструмент и используй его.'
+],
+'02_High_Priestess.jpg':[
+'Интуиция, наблюдение и знание, которое пока не оформилось в слова. Не всё важное лежит на поверхности.',
+'Подавленная интуиция, закрытость, недосказанность или путаница между предчувствием и страхом.',
+'Молчание, за которым скрывается избегание разговора.',
+'Не спеши с выводом. Отдели факты от догадок и прислушайся к тому, что повторяется.'
+],
+'03_Empress.jpg':[
+'Рост, забота, чувственность и способность создавать комфортную среду. То, во что вкладываются внимание и тепло, может развиваться.',
+'Истощение, зависимость от одобрения, чрезмерная опека или забытые собственные потребности.',
+'Забота, которая превращается в контроль или самоотмену.',
+'Подумай, что сейчас нуждается в питании и внимании — включая тебя самого.'
+],
+'04_Emperor.jpg':[
+'Структура, устойчивость, границы и ответственность. Ситуации нужна ясная опора и взрослое решение.',
+'Жёсткость, давление, страх потерять контроль или отсутствие надёжной опоры.',
+'Попытка управлять людьми вместо того, чтобы договориться.',
+'Определи правила и границы, но оставь место для гибкости.'
+],
+'05_Hierophant.jpg':[
+'Традиции, обучение, общие ценности и поиск системы, которой можно доверять. Полезны опыт и проверенные знания.',
+'Сомнение в навязанных правилах, конфликт с авторитетом или формальное следование чужим ожиданиям.',
+'Жизнь по сценарию, который ты никогда сам не выбирал.',
+'Спроси себя, какие убеждения действительно твои, а какие достались по наследству.'
+],
+'06_Lovers.jpg':[
+'Близость, взаимное притяжение и выбор, который должен совпадать с внутренними ценностями. Важна честность перед собой и другим.',
+'Разлад, двойственность, несовпадение желаний или решение, которое откладывается.',
+'Идеализация другого человека и отказ замечать реальные различия.',
+'Смотри не только на чувства, но и на поступки, совместимость и взаимность.'
+],
+'07_Chariot.jpg':[
+'Движение, воля и способность удержать направление несмотря на противоречия. Ситуация требует собранности.',
+'Потеря направления, спешка, конфликтующие желания или попытка продавить результат.',
+'Победа любой ценой, даже если цена — собственное спокойствие.',
+'Выбери направление и не трать силы на борьбу с каждым встречным препятствием.'
+],
+'08_Strength.jpg':[
+'Спокойная смелость, выдержка и умение обращаться с сильными эмоциями без подавления.',
+'Истощение, сомнения в себе, вспышки раздражения или попытка казаться сильнее, чем чувствуешь.',
+'Сдерживание эмоций до момента, когда они начинают управлять поведением.',
+'Тебе не обязательно быть железным. Мягкость и честность тоже могут быть силой.'
+],
+'09_Hermit.jpg':[
+'Пауза, самостоятельный поиск ответа и потребность услышать собственные мысли без чужого шума.',
+'Изоляция, избегание контакта или затянувшееся ожидание полной ясности.',
+'Уход в одиночество, чтобы не сталкиваться с неудобным разговором.',
+'Возьми дистанцию, но не превращай её в стену. Подумай, какой ответ уже созрел.'
+],
+'10_Wheel_of_Fortune.jpg':[
+'Поворот обстоятельств, циклы и перемены, которые могут открыть новое направление.',
+'Сопротивление переменам, повторение старого сценария или ощущение, что всё происходит не вовремя.',
+'Ожидание удачного случая вместо собственного участия.',
+'Заметь, что повторяется. Подумай, какую часть цикла ты можешь изменить.'
+],
+'11_Justice.jpg':[
+'Честность, последствия решений, равновесие и необходимость смотреть на факты без самообмана.',
+'Неравный обмен, уклонение от ответственности или слишком суровый суд над собой.',
+'Поиск виноватого вместо признания собственной доли участия.',
+'Собери факты, оцени обе стороны и назови вещи своими именами.'
+],
+'12_Hanged_Man.jpg':[
+'Вынужденная пауза, смена перспективы и готовность отпустить привычный способ решения.',
+'Застревание, бесплодное ожидание или жертва, которая давно перестала иметь смысл.',
+'Привычка терпеть и называть это глубиной или преданностью.',
+'Не ускоряй то, что требует переосмысления. Но проверь, есть ли у ожидания смысл.'
+],
+'13_Death.jpg':[
+'Завершение этапа, глубокая трансформация и освобождение места для нового. Это не буквальная смерть.',
+'Страх перемен, цепляние за исчерпанное или затянувшееся прощание.',
+'Попытка сохранить форму отношений или дела, содержание которых уже изменилось.',
+'Признай, что закончилось. Необязательно сразу знать, что будет дальше.'
+],
+'14_Temperance.jpg':[
+'Восстановление баланса, постепенное сближение противоположностей и спокойное движение без крайностей.',
+'Перекос, нетерпение, несовместимые ритмы или трудность найти меру.',
+'Компромисс, в котором один человек постоянно отказывается от себя.',
+'Ищи не идеальный баланс, а такой ритм, который можно поддерживать долго.'
+],
+'15_Devil.jpg':[
+'Сильное желание, привязанность, искушение и честный взгляд на то, что имеет над тобой власть.',
+'Осознание зависимости, попытка освободиться или первые признаки выхода из замкнутого круга.',
+'Самооправдание и привычка считать ограничение неизбежным.',
+'Назови свою привязанность прямо. Посмотри, какую цену ты за неё платишь.'
+],
+'16_Tower.jpg':[
+'Разрушение непрочной конструкции, внезапная ясность и столкновение с тем, что больше нельзя игнорировать.',
+'Отсроченный кризис, сопротивление очевидному или страх перемен, которые уже назрели.',
+'Удерживание фасада, когда внутри давно всё изменилось.',
+'Не пытайся восстановить то, что держалось только на отрицании. Сначала найди опору.'
+],
+'17_Star.jpg':[
+'Надежда, восстановление, искренность и возможность снова увидеть перспективу после сложного периода.',
+'Разочарование, потеря веры в себя или ощущение, что до желаемого слишком далеко.',
+'Ожидание спасения извне и идеализация будущего.',
+'Вернись к тому, что даёт силы. Надежда становится реальной через маленькие действия.'
+],
+'18_Moon.jpg':[
+'Неопределённость, тревога, сны и скрытые мотивы. Сейчас легко принять предположение за факт.',
+'Прояснение страхов, выход из тумана или, наоборот, усиление внутренней путаницы.',
+'Самонакручивание, подозрительность и чтение чужих мыслей без доказательств.',
+'Не принимай важное решение на пике тревоги. Проверь информацию и дай себе время.'
+],
+'19_Sun.jpg':[
+'Ясность, радость, открытость и ощущение, что можно перестать прятаться. Хороший знак жизненной энергии.',
+'Усталость, завышенные ожидания или радость, которую трудно себе позволить.',
+'Потребность постоянно демонстрировать счастье и успешность.',
+'Заметь то, что действительно работает. Не обесценивай простые хорошие моменты.'
+],
+'20_Judgement.jpg':[
+'Переоценка прошлого, пробуждение и готовность ответить на важный внутренний вопрос.',
+'Самокритика, страх оценки или нежелание услышать выводы из прошлого опыта.',
+'Жизнь в режиме вечного суда над собой или другими.',
+'Посмотри на прошлое как на опыт, а не как на приговор. Реши, что берёшь с собой.'
+],
+'21_World.jpg':[
+'Завершение цикла, интеграция опыта и ощущение целостности. Результат становится видимым.',
+'Незавершённость, задержка финального шага или трудность признать достигнутое.',
+'Бесконечное стремление к следующему этапу без проживания текущего.',
+'Зафиксируй результат. Заверши то, что давно просит точки.'
+],
+
+'Cups01.jpg':['Новый эмоциональный импульс, открытость чувствам, симпатия или возможность близости.','Закрытость, эмоциональная усталость или чувство, которому пока не дают места.','Ожидание, что другой заполнит внутреннюю пустоту.','Разреши себе почувствовать, но не требуй от чувства немедленного ответа.'],
+'Cups02.jpg':['Взаимность, притяжение, диалог и готовность встретиться на равных.','Несовпадение ожиданий, дистанция или нарушенный баланс отдачи и получения.','Идея идеальной пары вместо реального контакта.','Проверь, есть ли встречное движение, а не только твоя инициатива.'],
+'Cups03.jpg':['Поддержка, дружба, радость общения и ощущение, что рядом есть свои люди.','Исключённость, поверхностное веселье или напряжение в компании.','Использование развлечений, чтобы не замечать проблему.','Не замыкайся. Найди людей, рядом с которыми можно быть собой.'],
+'Cups04.jpg':['Эмоциональная пауза, пресыщение или необходимость заметить новую возможность.','Возвращение интереса, выход из апатии или готовность снова включиться.','Отказ от шанса из-за того, что он не похож на ожидаемый.','Посмотри, не отвергаешь ли ты что-то только потому, что устал.'],
+'Cups05.jpg':['Разочарование, сожаление и внимание к тому, что не получилось.','Принятие потери, восстановление и постепенное возвращение к жизни.','Застревание в вине и бесконечное прокручивание прошлого.','Признай боль, но не забывай о том, что осталось доступным.'],
+'Cups06.jpg':['Воспоминания, нежность, прошлые связи и потребность в простоте.','Идеализация прошлого или необходимость перестать жить прежней историей.','Сравнение настоящего с воспоминанием, которое стало красивее реальности.','Вспомни, что было ценно, но не требуй от настоящего быть прошлым.'],
+'Cups07.jpg':['Много желаний и вариантов, фантазии и трудность выбрать реальную цель.','Прояснение приоритетов и отказ от иллюзий или, наоборот, растерянность.','Путать возможность с обещанием и мечту с планом.','Выбери один вариант, который можно проверить действиями.'],
+'Cups08.jpg':['Осознанный уход от того, что больше не наполняет. Поиск более глубокого смысла.','Страх уйти, возвращение к старому или невозможность отпустить привычное.','Оставаться из-за вложенных сил, а не из-за настоящего желания.','Спроси себя, что удерживает тебя: любовь к этому или страх перемен.'],
+'Cups09.jpg':['Удовлетворение, удовольствие и возможность получить желаемое.','Переизбыток, разочарование после достижения или зависимость от комфорта.','Подмена настоящего благополучия быстрыми удовольствиями.','Разберись, чего ты хочешь на самом деле, а не только что приятно сейчас.'],
+'Cups10.jpg':['Эмоциональная близость, чувство дома, поддержка и устойчивое счастье.','Напряжение в семье или отношениях, внешняя гармония при внутренних проблемах.','Идеальная картинка, ради которой замалчивают неудобные вещи.','Строй близость через честность, а не через видимость бесконечного согласия.'],
+'Cups11.jpg':['Чуткость, романтичность, предложение или человек, который действует через чувства.','Эмоциональная незрелость, обещания без продолжения или уход в фантазии.','Влюблённость в образ вместо знакомства с человеком.','Слушай слова, но проверяй их поступками.'],
+'Cups12.jpg':['Романтический порыв, движение навстречу чувствам и желание сблизиться.','Непостоянство, эмоциональные качели или красивые жесты без ответственности.','Погоня за драмой вместо спокойной взаимности.','Не путай интенсивность эмоций с надёжностью.'],
+'Cups13.jpg':['Эмоциональная зрелость, эмпатия и способность выдерживать чувства без давления.','Скрытая обида, эмоциональная закрытость или чрезмерная восприимчивость.','Манипуляция чувством вины и роль вечного спасателя.','Сочувствуй, не отказываясь от собственных границ.'],
+'Cups14.jpg':['Зрелая эмоциональность, забота и глубокое понимание другого человека.','Зависимость, эмоциональное давление или нестабильность под внешним спокойствием.','Спасательство и попытка управлять чужими чувствами.','Сохраняй тепло, но не бери ответственность за чужую жизнь.'],
+
+'Pents01.jpg':['Новый практический шанс, деньги, работа или начало чего-то устойчивого.','Упущенная возможность, слабая подготовка или трудность перевести идею в реальность.','Желание получить результат без вложений и последовательности.','Начни с конкретного шага и оцени реальные ресурсы.'],
+'Pents02.jpg':['Гибкость, распределение ресурсов и необходимость совмещать несколько задач.','Перегрузка, нестабильность или попытка удержать слишком многое.','Постоянное лавирование вместо решения главной проблемы.','Расставь приоритеты и честно оцени свои силы.'],
+'Pents03.jpg':['Командная работа, мастерство и развитие навыка через практику.','Недооценённый вклад, плохая координация или нежелание учиться.','Работа ради одобрения вместо роста компетенции.','Обсуди роли и критерии результата. Проси конкретную обратную связь.'],
+'Pents04.jpg':['Сохранение ресурсов, безопасность и стремление удержать достигнутое.','Страх потери, чрезмерный контроль или неспособность делиться.','Считать стабильностью ситуацию, в которой страшно пошевелиться.','Отличай разумную осторожность от жизни в постоянном дефиците.'],
+'Pents05.jpg':['Нехватка поддержки, финансовая или эмоциональная трудность, ощущение одиночества.','Постепенное восстановление, поиск помощи и выход из тяжёлого периода.','Стыд просить о помощи и убеждение, что нужно справляться одному.','Обратись к доступной поддержке. Не превращай трудность в личную вину.'],
+'Pents06.jpg':['Обмен, помощь, справедливое распределение и готовность делиться ресурсами.','Долги, неравный обмен или помощь с условиями и скрытыми ожиданиями.','Давать, чтобы получить власть или благодарность.','Проверь, насколько обмен действительно взаимный.'],
+'Pents07.jpg':['Терпеливый рост, оценка вложений и ожидание результатов труда.','Неторопливость, разочарование или вложения, которые не дают отдачи.','Бесконечно ждать, что ситуация изменится сама.','Оцени прогресс по фактам и при необходимости измени стратегию.'],
+'Pents08.jpg':['Обучение, дисциплина и постепенное совершенствование мастерства.','Монотонность, невнимательность или работа без развития.','Перфекционизм, который мешает закончить и показать результат.','Сосредоточься на практике, а не на идеальном исполнении.'],
+'Pents09.jpg':['Самостоятельность, комфорт и результат, который достигнут собственными усилиями.','Зависимость от внешнего статуса или неуверенность в своей самостоятельности.','Потребность доказывать ценность через деньги и вещи.','Признай собственные достижения и не измеряй ими всю свою ценность.'],
+'Pents10.jpg':['Долгосрочная устойчивость, семейные ресурсы и прочная основа на будущее.','Споры о деньгах, нестабильность или конфликт семейных ожиданий.','Деньги и традиции становятся важнее отношений.','Думай о будущем, но договаривайся о ценностях уже сейчас.'],
+'Pents11.jpg':['Любознательность, практическое обучение и первые реальные шаги к цели.','Неподготовленность, отвлечение или обещание, которое пока не подкреплено навыком.','Бесконечно готовиться, не начиная.','Выбери навык и сделай небольшой измеримый шаг.'],
+'Pents12.jpg':['Последовательность, надёжность и движение к результату без лишней суеты.','Застой, упрямство или медлительность, которая мешает адаптироваться.','Осторожность превращается в отказ от перемен.','Двигайся устойчиво, но регулярно проверяй, туда ли идёшь.'],
+'Pents13.jpg':['Практичность, самостоятельность и умение создавать стабильность вокруг себя.','Чрезмерная сосредоточенность на выгоде или зависимость от материального комфорта.','Оценивать себя и других только по полезности.','Сочетай самостоятельность с открытостью к близости и поддержке.'],
+'Pents14.jpg':['Надёжность, ответственность и способность управлять ресурсами на длинной дистанции.','Жёсткость, собственничество или чрезмерная фиксация на безопасности.','Контроль под видом заботы о стабильности.','Создавай опору, но не превращай её в клетку.'],
+
+'Swords01.jpg':['Ясность, честный разговор, решение и способность увидеть суть без украшений.','Путаница, резкие слова или мысль, которую пока трудно сформулировать.','Использование правды как оружия.','Назови проблему точно и говори прямо, но без намерения ранить.'],
+'Swords02.jpg':['Нерешительность, внутренний конфликт и попытка сохранить равновесие между вариантами.','Снятие повязки, вынужденный выбор или накопившееся напряжение.','Отказ выбирать тоже становится выбором.','Собери недостающие факты и обозначь срок решения.'],
+'Swords03.jpg':['Боль, разочарование, неприятная правда или переживание разрыва.','Заживление, признание старой раны или подавленная обида.','Возвращение к боли через постоянное мысленное повторение.','Не обесценивай переживание. Дай ему место и не принимай его за вечность.'],
+'Swords04.jpg':['Отдых, восстановление и необходимость временно выйти из конфликта.','Возвращение активности или невозможность остановиться даже при истощении.','Избегание решения под видом паузы.','Восстанови силы и назначь момент, когда вернёшься к вопросу.'],
+'Swords05.jpg':['Конфликт, спор и победа, которая может оставить неприятные последствия.','Попытка примирения, признание ущерба или отказ от бессмысленной борьбы.','Желание доказать правоту любой ценой.','Оцени, что важнее: выиграть спор или сохранить то, что имеет значение.'],
+'Swords06.jpg':['Переход от сложного периода к более спокойному состоянию.','Трудность отпустить прошлое или возвращение к нерешённой теме.','Убеждение, что смена места автоматически решит внутреннюю проблему.','Возьми опыт с собой, но не тащи старый конфликт в новую ситуацию.'],
+'Swords07.jpg':['Стратегия, осторожность и необходимость действовать самостоятельно.','Разоблачение, неудачная хитрость или осознание, что обходной путь не работает.','Скрытность, самообман и попытка избежать ответственности.','Продумай шаги, но не строй решение на лжи.'],
+'Swords08.jpg':['Ограничивающие убеждения и ощущение, что выхода нет, хотя часть ограничений внутренние.','Первые шаги к освобождению или признание собственной свободы выбора.','Привычка считать себя беспомощным.','Проверь, что действительно невозможно, а что пока только страшно.'],
+'Swords09.jpg':['Тревога, вина, бессонные мысли и страх перед возможным исходом.','Ослабление тревоги или нежелание смотреть на то, что беспокоит.','Катастрофизация и наказание себя за ещё не случившееся.','Отдели вероятность от факта. Не оставайся с тревогой в одиночку.'],
+'Swords10.jpg':['Болезненное завершение, предел старого сценария и точка, после которой нужно менять подход.','Постепенное восстановление после кризиса или сопротивление неизбежному финалу.','Ожидание худшего даже после того, как опасность миновала.','Не пытайся оживить завершённое. Сейчас важнее восстановиться.'],
+'Swords11.jpg':['Наблюдательность, любознательность и желание выяснить правду.','Сплетни, поспешные выводы или слова без достаточной информации.','Подглядывание за чужой жизнью вместо прямого разговора.','Задавай вопросы и проверяй источники, не делай вывод по одному сигналу.'],
+'Swords12.jpg':['Решительность, скорость мысли и прямое движение к цели.','Резкость, конфликтность, поспешность или действия без оценки последствий.','Уверенность, что скорость важнее точности.','Сначала сформулируй цель, затем действуй. Не путай прямоту с грубостью.'],
+'Swords13.jpg':['Независимость, ясные границы и способность видеть ситуацию без самообмана.','Холодность, чрезмерная критичность или защитная отстранённость.','Одиночество, которое выдаётся за полную независимость.','Сохраняй ясность, но не отказывайся от человеческого тепла.'],
+'Swords14.jpg':['Интеллект, стратегия, авторитет и умение принимать непростые решения.','Жёсткий контроль, цинизм или использование ума для давления.','Рационализация чувств вместо их признания.','Принимай решение на основе фактов, не отрицая эмоциональные последствия.'],
+
+'Wands01.jpg':['Искра, вдохновение, желание начать и прилив энергии.','Потеря энтузиазма, задержка старта или идея без подходящих условий.','Постоянный поиск нового возбуждения без продолжения начатого.','Зафиксируй идею и преврати её в первый выполнимый шаг.'],
+'Wands02.jpg':['Планирование, выбор направления и взгляд за пределы привычного.','Страх риска, отсутствие плана или сомнения перед расширением горизонтов.','Мечтать о переменах, оставаясь в полной неподвижности.','Выбери направление и проверь его небольшим экспериментом.'],
+'Wands03.jpg':['Расширение, ожидание результатов и появление перспектив.','Задержки, слишком большие ожидания или отсутствие обратной связи.','Считать планы уже достигнутым результатом.','Продолжай движение и уточняй сроки по реальным обстоятельствам.'],
+'Wands04.jpg':['Праздник, устойчивость, чувство принадлежности и приятный этап после усилий.','Напряжение дома, нестабильность или невозможность расслабиться.','Поддерживать внешнюю картинку гармонии.','Раздели радость с близкими и обрати внимание на атмосферу внутри отношений.'],
+'Wands05.jpg':['Конкуренция, столкновение мнений и необходимость отстоять свою позицию.','Скрытый конфликт, избегание разногласий или истощающая борьба.','Превращать любое отличие во мнениях в соревнование.','Определи, за что действительно стоит спорить.'],
+'Wands06.jpg':['Признание, заметный результат и ощущение, что усилия увидели.','Недостаток признания, сомнения в успехе или зависимость от похвалы.','Жить ради аплодисментов и внешнего подтверждения.','Признай собственную работу, даже если реакция окружающих скромнее ожиданий.'],
+'Wands07.jpg':['Защита позиции, смелость и необходимость удержать личные границы.','Усталость от сопротивления, неуверенность или желание отступить.','Постоянная оборона даже там, где угрозы нет.','Выбери, какие границы действительно важны, и обозначь их спокойно.'],
+'Wands08.jpg':['Быстрое развитие, новости, движение и ускорение событий.','Задержки, путаница, поспешность или слишком много задач одновременно.','Суета вместо направленного движения.','Используй момент, но не теряй контроль над деталями.'],
+'Wands09.jpg':['Опыт, осторожность и готовность защитить достигнутое после трудностей.','Истощение, подозрительность или ожидание повторного удара.','Не позволять себе расслабиться даже в безопасной ситуации.','Сохрани осторожность, но дай себе возможность восстановиться.'],
+'Wands10.jpg':['Большая ответственность, нагрузка и необходимость довести начатое.','Перегрузка, чужие обязанности на твоих плечах или отказ делегировать.','Гордиться тем, что всё приходится тащить одному.','Пересмотри нагрузку и убери то, что не обязан нести.'],
+'Wands11.jpg':['Энтузиазм, смелость, любопытство и готовность исследовать новое.','Нетерпение, хаотичность или быстро угасающий интерес.','Начинать из азарта, не думая о продолжении.','Сохрани энергию, но проверь, хватает ли ей плана.'],
+'Wands12.jpg':['Действие, страсть, смелость и движение к цели.','Импульсивность, непоследовательность или обещания без результата.','Путать азарт с надёжностью.','Смотри, совпадают ли темп, слова и реальные действия.'],
+'Wands13.jpg':['Уверенность, харизма, независимость и способность вдохновлять других.','Ревность, вспыльчивость или потребность постоянно быть в центре внимания.','Давление личностью вместо уважения к чужой свободе.','Проявляй инициативу, не подавляя людей рядом.'],
+'Wands14.jpg':['Лидерство, зрелая энергия, предпринимательский дух и широкий взгляд.','Самоуверенность, нетерпимость или желание контролировать всё вокруг.','Считать собственный энтузиазм достаточным основанием для чужого согласия.','Веди за собой примером и оставляй другим право на выбор.']
 };
 
-function showPage(id, button) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+let zipCards={};
+let deck=[];
+let picked=[];
+let spread='three';
+let needed=3;
+let questionText='';
+let topicText='';
+let readingSaved=false;
+let loading=false;
+
+const spreadInfo={
+  one:{n:1,title:'Одна карта',positions:['Главная подсказка']},
+  three:{n:3,title:'Прошлое · Настоящее · Будущее',positions:['Прошлое','Настоящее','Будущее']},
+  love:{n:5,title:'Отношения',positions:['Ты','Другой человек','Что между вами','Препятствие','Перспектива']},
+  hidden:{n:3,title:'Скрытое',positions:['За пределами очевидного','Что игнорируется','Что стоит увидеть']},
+  celtic:{n:10,title:'Кельтский крест',positions:[
+    'Суть ситуации','Препятствие','Основа','Недавнее прошлое',
+    'Возможное развитие','Ближайшее будущее','Твоя позиция',
+    'Внешние обстоятельства','Надежды и опасения','Итог'
+  ]},
+  free:{n:3,title:'Свободный расклад',positions:[]}
+};
+
+function escapeHtml(value){
+  return String(value??'').replace(/[&<>"']/g,ch=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[ch]));
+}
+
+function showPage(id,button){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-
-  document.querySelectorAll('.bottom button').forEach(b => b.classList.remove('active'));
-
-  if (button) {
-    button.classList.add('active');
-  } else {
-    const map = {home:0,tarot:1,meta:2,history:3};
-    if (map[id] !== undefined) {
-      document.querySelectorAll('.bottom button')[map[id]].classList.add('active');
-    }
+  document.querySelectorAll('.bottom button').forEach(b=>b.classList.remove('active'));
+  if(button) button.classList.add('active');
+  else{
+    const map={home:0,tarot:1,meta:2,history:3};
+    if(map[id]!==undefined) document.querySelectorAll('.bottom button')[map[id]].classList.add('active');
   }
-
   window.scrollTo(0,0);
-  if (id === 'history') renderHistory();
+  if(id==='history') renderHistory();
 }
 
-function chooseDeck() {
-  showPage('spreads');
-}
+function chooseDeck(){showPage('spreads')}
 
-function selectSpread(id) {
-  spread = id;
-  document.getElementById('freeCount').classList.toggle('hidden', id !== 'free');
+function selectSpread(id){
+  spread=id;
+  document.getElementById('freeCount').classList.toggle('hidden',id!=='free');
   showPage('setup');
 }
 
-async function loadDeck() {
-  if (Object.keys(zipCards).length) return true;
+function updateLoading(percent,label){
+  document.getElementById('loadingFill').style.width=Math.max(0,Math.min(100,percent))+'%';
+  document.getElementById('loadingPercent').textContent=label||`${Math.round(percent)}%`;
+}
 
-  const status = document.getElementById('deckStatus');
-  status.textContent = 'Загружаю 78 карт из архива…';
+async function loadDeck(){
+  if(Object.keys(zipCards).length===78) return true;
+  if(loading) return false;
+  loading=true;
 
-  try {
-    if (!window.JSZip) {
-      throw new Error('Не загрузилась библиотека ZIP. Проверь интернет-соединение.');
+  const status=document.getElementById('deckStatus');
+  const loadingArea=document.getElementById('loadingArea');
+  const deckArea=document.getElementById('deckArea');
+  const fanArea=document.getElementById('fanArea');
+
+  deckArea.classList.add('hidden');
+  fanArea.classList.add('hidden');
+  loadingArea.classList.remove('hidden');
+  status.textContent='Подготавливаю колоду…';
+  updateLoading(2,'Подключаюсь к колоде…');
+
+  try{
+    if(!window.JSZip) throw new Error('Не загрузилась библиотека ZIP. Проверь интернет-соединение.');
+
+    const response=await fetch(ZIP_URL+'?v=2');
+    if(!response.ok) throw new Error('Не удалось найти ZIP-архив рядом с index.html.');
+
+    let blob;
+    const total=Number(response.headers.get('content-length'))||0;
+
+    if(response.body&&response.body.getReader){
+      const reader=response.body.getReader();
+      const chunks=[];
+      let received=0;
+      while(true){
+        const {done,value}=await reader.read();
+        if(done) break;
+        chunks.push(value);
+        received+=value.length;
+        const p=total?Math.min(48,5+received/total*43):25;
+        updateLoading(p,total?`Загружаю архив… ${Math.round(received/total*100)}%`:'Загружаю архив…');
+      }
+      blob=new Blob(chunks);
+    }else{
+      blob=await response.blob();
+      updateLoading(48,'Архив загружен. Распаковываю…');
     }
 
-    const res = await fetch(ZIP_URL + '?v=1');
+    const zip=await JSZip.loadAsync(blob,{checkCRC32:false});
+    const temp={};
 
-    if (!res.ok) {
-      throw new Error('Не удалось найти ZIP. Проверь, что архив лежит рядом с index.html в GitHub.');
+    for(let i=0;i<cardFiles.length;i++){
+      const file=cardFiles[i];
+      const entry=zip.file(file);
+      if(!entry) throw new Error('В архиве не найдена карта '+file);
+      const data=await entry.async('base64');
+      temp[file]='data:image/jpeg;base64,'+data;
+      updateLoading(48+(i+1)/78*50,`Подготавливаю карты… ${i+1} из 78`);
+      if(i%5===0) await new Promise(resolve=>setTimeout(resolve,0));
     }
 
-    const blob = await res.blob();
-    const zip = await JSZip.loadAsync(blob);
-
-    for (const file of cardFiles) {
-      const entry = zip.file(file);
-      if (!entry) throw new Error('В архиве не найдена карта ' + file);
-
-      const data = await entry.async('base64');
-      zipCards[file] = 'data:image/jpeg;base64,' + data;
-    }
-
-    status.textContent = 'Колода загружена: 78 из 78 карт';
+    zipCards=temp;
+    updateLoading(100,'Все 78 карт готовы');
+    status.textContent='Колода загружена: 78 из 78 карт';
+    await new Promise(resolve=>setTimeout(resolve,450));
+    loadingArea.classList.add('hidden');
+    deckArea.classList.remove('hidden');
+    loading=false;
     return true;
 
-  } catch (e) {
-    status.textContent = 'Ошибка загрузки: ' + e.message;
+  }catch(error){
+    loading=false;
+    status.textContent='Ошибка загрузки: '+error.message;
+    loadingArea.classList.add('hidden');
+    deckArea.classList.remove('hidden');
+    document.getElementById('sceneCaption').textContent='НЕ УДАЛОСЬ ЗАГРУЗИТЬ КОЛОДУ';
     return false;
   }
 }
 
-async function startReading() {
-  topicText = document.getElementById('topic').value;
-  questionText = document.getElementById('question').value.trim();
+async function startReading(){
+  topicText=document.getElementById('topic').value;
+  questionText=document.getElementById('question').value.trim();
+  const info=spreadInfo[spread];
+  needed=spread==='free'?Number(document.getElementById('freeNumber').value):info.n;
 
-  const info = spreadInfo[spread];
-
-  needed = spread === 'free'
-    ? Number(document.getElementById('freeNumber').value)
-    : info.n;
-
-  if (spread === 'free') {
-    info.positions = Array.from({length:needed}, (_,i) => `Карта ${i+1}`);
+  if(spread==='free'){
+    info.positions=Array.from({length:needed},(_,i)=>`Карта ${i+1}`);
   }
 
-  picked = [];
-  readingSaved = false;
+  picked=[];
+  deck=[];
+  readingSaved=false;
 
-  document.getElementById('readingTopic').textContent = topicText.toUpperCase();
-  document.getElementById('readingTitle').textContent = info.title;
-  document.getElementById('readingQuestion').textContent =
-    questionText ? `«${questionText}»` : 'Без конкретного вопроса';
+  document.getElementById('readingTopic').textContent=topicText.toUpperCase();
+  document.getElementById('readingTitle').textContent=info.title;
+  document.getElementById('readingQuestion').textContent=questionText?`«${questionText}»`:'Без конкретного вопроса';
 
   document.getElementById('deckArea').classList.remove('hidden');
   document.getElementById('fanArea').classList.add('hidden');
   document.getElementById('resultArea').classList.add('hidden');
+  document.getElementById('loadingArea').classList.remove('hidden');
   document.getElementById('interpretation').classList.add('hidden');
   document.getElementById('saveReading').classList.add('hidden');
   document.getElementById('backToSummary').classList.add('hidden');
-
-  document.getElementById('saveReading').textContent = 'Сохранить расклад';
-  document.getElementById('pickedTray').innerHTML = '';
+  document.getElementById('saveReading').textContent='Сохранить расклад';
+  document.getElementById('pickedTray').innerHTML='';
   document.getElementById('deckStack').classList.remove('shuffling');
+  document.getElementById('sceneCaption').textContent='СОСРЕДОТОЧЬСЯ НА СВОЁМ ВОПРОСЕ';
 
   showPage('reading');
   await loadDeck();
 }
 
-function shuffleDeck() {
-  if (Object.keys(zipCards).length !== 78) {
-    loadDeck().then(ok => {
-      if (ok) shuffleDeck();
-    });
+function shuffleDeck(){
+  if(Object.keys(zipCards).length!==78){
+    loadDeck().then(ok=>{if(ok) shuffleDeck()});
     return;
   }
+  deck=[...cardFiles];
+  for(let i=deck.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [deck[i],deck[j]]=[deck[j],deck[i]];
+  }
+  picked=[];
+  document.getElementById('pickedTray').innerHTML='';
+  const stack=document.getElementById('deckStack');
+  stack.classList.remove('shuffling');
+  void stack.offsetWidth;
+  stack.classList.add('shuffling');
+  document.getElementById('sceneCaption').textContent='ПЕРЕМЕШИВАЕМ КАРТЫ';
 
-  deck = [...cardFiles].sort(() => Math.random() - .5);
-  picked = [];
-
-  document.getElementById('deckStack').classList.add('shuffling');
-  document.getElementById('sceneCaption').textContent = 'ПЕРЕМЕШИВАЕМ';
-
-  setTimeout(() => {
+  setTimeout(()=>{
     document.getElementById('deckArea').classList.add('hidden');
     document.getElementById('fanArea').classList.remove('hidden');
-    document.getElementById('sceneCaption').textContent = 'ВЫБЕРИ КАРТЫ';
+    document.getElementById('sceneCaption').textContent='ВЫБЕРИ СВОИ КАРТЫ';
     renderFan();
-  }, 1650);
+  },1650);
 }
 
-function renderFan() {
-  const fan = document.getElementById('fan');
-  fan.innerHTML = '';
+function createBackImage(){
+  const img=document.createElement('img');
+  img.className='card-back-art';
+  img.src=BACK_URL;
+  img.alt='';
+  img.draggable=false;
+  return img;
+}
 
-  const count = Math.min(5, deck.length);
-
-  for (let i = 0; i < count; i++) {
-    const el = document.createElement('button');
-    el.className = 'fan-card';
-    el.type = 'button';
-    el.setAttribute('aria-label', `Вытянуть карту ${i+1}`);
-
-    const img = document.createElement('img');
-    img.className = 'card-back-art';
-    img.src = BACK_URL;
-    img.alt = '';
-    img.draggable = false;
-
-    img.onerror = () => {
-      console.error('Не удалось загрузить рубашку:', BACK_URL);
-      document.getElementById('deckStatus').textContent = 'Ошибка загрузки рубашки FATE.exe';
-    };
-
-    el.appendChild(img);
-    el.onclick = () => drawCard(el);
+function renderFan(){
+  const fan=document.getElementById('fan');
+  fan.innerHTML='';
+  for(let i=0;i<5;i++){
+    const el=document.createElement('button');
+    el.className='fan-card';
+    el.type='button';
+    el.setAttribute('aria-label',`Выбрать карту ${i+1}`);
+    el.appendChild(createBackImage());
+    el.addEventListener('click',()=>drawCard(el));
     fan.appendChild(el);
   }
-
   updateDrawProgress();
 }
 
-function updateDrawProgress() {
-  document.getElementById('drawStatus').textContent =
-    `Выбрано ${picked.length} из ${needed}`;
+function updateDrawProgress(){
+  document.getElementById('drawStatus').textContent=`Выбрано ${picked.length} из ${needed}`;
 }
 
-function drawCard(button) {
-  if (
-    picked.length >= needed ||
-    !button ||
-    button.classList.contains('picked-now')
-  ) return;
+function createCardBack(className){
+  const card=document.createElement('div');
+  card.className=className;
+  card.appendChild(createBackImage());
+  return card;
+}
 
+/*
+  Карта не удаляется из веера и не становится прозрачной.
+  После анимации слот снова доступен для следующего выбора.
+*/
+function drawCard(button){
+  if(picked.length>=needed||button.disabled||deck.length===0) return;
+
+  button.disabled=true;
   button.classList.add('picked-now');
-  button.disabled = true;
 
-  const file = deck.pop();
-  const reversed = Math.random() < .15;
-
+  const file=deck.pop();
+  const reversed=Math.random()<.15;
   picked.push({file,reversed});
 
-  const tray = document.getElementById('pickedTray');
-  const back = createCardBack('picked-back');
-  tray.appendChild(back);
-
+  const tray=document.getElementById('pickedTray');
+  tray.appendChild(createCardBack('picked-back'));
   updateDrawProgress();
 
-  if (picked.length === needed) {
-    document.getElementById('sceneCaption').textContent = 'КАРТЫ ВЫБРАНЫ';
+  setTimeout(()=>{
+    button.classList.remove('picked-now');
 
-    setTimeout(() => {
+    if(picked.length>=needed){
+      document.getElementById('sceneCaption').textContent='КАРТЫ ВЫБРАНЫ';
       document.getElementById('fanArea').classList.add('hidden');
       revealCards();
-    }, 420);
-  }
+    }else{
+      button.disabled=false;
+    }
+  },430);
 }
 
-function revealCards() {
+/* Контекст темы */
+function themeLens(file){
+  const isCups=file.startsWith('Cups');
+  const isPents=file.startsWith('Pents');
+  const isSwords=file.startsWith('Swords');
+  const isWands=file.startsWith('Wands');
+
+  if(topicText==='Любовь и отношения'){
+    if(isCups) return 'В отношениях эта карта особенно связана с эмоциональной взаимностью, близостью и тем, насколько безопасно проявлять чувства.';
+    if(isSwords) return 'В отношениях она обращает внимание на разговоры, недосказанность, границы и мысли, которые могут мешать близости.';
+    if(isPents) return 'В отношениях она говорит о надёжности, последовательности и том, подтверждаются ли чувства реальными поступками.';
+    if(isWands) return 'В отношениях она подчёркивает притяжение, инициативу, страсть и то, куда движется ваша общая энергия.';
+    return 'В отношениях карта затрагивает не только чувства, но и выбор, ответственность и готовность честно увидеть происходящее.';
+  }
+  if(topicText==='Деньги и карьера'){
+    if(isPents) return 'В работе и деньгах это прямой акцент на ресурсах, навыках, устойчивости и практическом результате.';
+    if(isWands) return 'В карьере карта связана с инициативой, амбициями, творческой энергией и готовностью действовать.';
+    if(isSwords) return 'В работе она подчёркивает стратегию, переговоры, решения и необходимость опираться на факты.';
+    if(isCups) return 'В профессиональной сфере она напоминает о мотивации, эмоциональном комфорте и смысле того, чем ты занимаешься.';
+    return 'В карьере карта показывает, как твой выбор, личная позиция и обстоятельства влияют на развитие ситуации.';
+  }
+  if(topicText==='Я и моё состояние'){
+    if(isCups) return 'На уровне внутреннего состояния карта касается чувств, потребности в принятии и эмоциональной честности.';
+    if(isSwords) return 'Она предлагает обратить внимание на мысли, тревогу, внутренний диалог и способы, которыми ты объясняешь себе происходящее.';
+    if(isPents) return 'Она возвращает к телу, повседневным привычкам, устойчивости и заботе о собственных ресурсах.';
+    if(isWands) return 'Она показывает уровень энергии, желания, инициативы и контакт с тем, что тебя по-настоящему зажигает.';
+    return 'Здесь карта описывает внутренний этап, личную опору и то, как ты обходишься с собственными потребностями.';
+  }
+  if(topicText==='Мысли и намерения'){
+    if(isCups) return 'В контексте мыслей и намерений карта говорит о чувствах, симпатии и эмоциональной готовности к контакту.';
+    if(isSwords) return 'Она описывает размышления, сомнения, осторожность и возможную стратегию человека.';
+    if(isPents) return 'Она показывает практический настрой: насколько человек готов вкладываться и подтверждать намерения поступками.';
+    if(isWands) return 'Она подчёркивает интерес, импульс, желание действовать и возможную инициативу.';
+    return 'Она помогает увидеть не только внешнее поведение, но и внутреннюю позицию, из которой человек действует.';
+  }
+  if(topicText==='Будущее'){
+    return 'В вопросе о будущем карта показывает возможное направление при сохранении нынешней динамики, а не неизбежное событие.';
+  }
+  return 'В контексте твоего вопроса карта помогает увидеть основной мотив ситуации и то, на что сейчас стоит обратить внимание.';
+}
+
+function getPositionLens(position){
+  const p=position.toLowerCase();
+  if(p.includes('прошл')) return 'В этой позиции карта описывает опыт и обстоятельства, которые сформировали нынешнюю ситуацию.';
+  if(p.includes('настоящ')||p.includes('суть')) return 'Здесь карта показывает центральную динамику ситуации — то, что происходит сейчас.';
+  if(p.includes('будущ')||p.includes('перспектив')||p.includes('развит')) return 'В этой позиции карта обозначает вероятное направление развития, если текущая динамика сохранится.';
+  if(p.includes('препят')) return 'Здесь карта показывает, что затрудняет движение: внешний барьер, внутренний конфликт или привычный сценарий.';
+  if(p.includes('ты')||p.includes('позиция')) return 'Эта позиция отражает твоё отношение к ситуации, ожидания и способ участия в ней.';
+  if(p.includes('другой')) return 'Эта позиция описывает возможную позицию другого человека, но не даёт доступа к его мыслям как к установленному факту.';
+  if(p.includes('между')) return 'Здесь раскрывается динамика контакта: что возникает между сторонами и чем поддерживается связь.';
+  if(p.includes('скрыт')||p.includes('очевид')) return 'Эта позиция обращает внимание на то, что пока остаётся за пределами привычного взгляда.';
+  if(p.includes('игнор')) return 'Здесь карта показывает тему, которую может быть неудобно замечать или признавать.';
+  if(p.includes('увидеть')) return 'Эта позиция предлагает новый угол зрения и то, что может стать полезным осознанием.';
+  if(p.includes('основа')) return 'Здесь раскрывается глубинная причина или фундамент, на котором держится ситуация.';
+  if(p.includes('надежд')||p.includes('опасен')) return 'Эта позиция показывает ожидания и страхи, которые могут влиять на восприятие ситуации.';
+  if(p.includes('внеш')) return 'Здесь речь идёт об обстоятельствах и влияниях, которые не полностью зависят от тебя.';
+  if(p.includes('итог')) return 'Эта позиция собирает общий вектор расклада и показывает, к чему может привести нынешний способ действовать.';
+  return 'В этой позиции карта раскрывает отдельную часть общей истории и дополняет соседние карты.';
+}
+
+function getCardData(card,index){
+  const data=meanings[card.file];
+  if(!data) return {
+    name:cardName(card.file),
+    meaning:'Значение этой карты пока не найдено.',
+    shadow:'Обрати внимание на то, что в ситуации повторяется.',
+    advice:'Вернись к вопросу и оцени факты.',
+    lens:themeLens(card.file),
+    position:getPositionLens(spreadInfo[spread].positions[index])
+  };
+  return {
+    name:cardName(card.file),
+    meaning:card.reversed?data[1]:data[0],
+    shadow:data[2],
+    advice:data[3],
+    lens:themeLens(card.file),
+    position:getPositionLens(spreadInfo[spread].positions[index])
+  };
+}
+
+function revealCards(){
   document.getElementById('resultArea').classList.remove('hidden');
-  document.getElementById('sceneCaption').textContent = 'ТВОИ КАРТЫ';
+  document.getElementById('sceneCaption').textContent='ТВОИ КАРТЫ';
+  const grid=document.getElementById('drawnGrid');
+  grid.innerHTML='';
 
-  const grid = document.getElementById('drawnGrid');
-  grid.innerHTML = '';
-
-  picked.forEach((card, i) => {
-    const wrap = document.createElement('div');
-    wrap.className = 'drawn';
-
-    wrap.innerHTML = `
-      <img alt="">
-      <div class="card-name">
-        ${spreadInfo[spread].positions[i]}<br>
-        ${cardName(card.file)}
-        ${card.reversed ? ' · перевёрнутая' : ''}
-      </div>
-    `;
-
-    const img = wrap.querySelector('img');
-    img.src = zipCards[card.file];
-    img.classList.add('card-reveal');
-    img.style.animationDelay = (i * .12) + 's';
-
-    if (card.reversed) img.style.transform = 'rotate(180deg)';
-
-    wrap.onclick = () => showInterpretation(i);
+  picked.forEach((card,i)=>{
+    const wrap=document.createElement('div');
+    wrap.className='drawn'+(card.reversed?' reversed':'');
+    const img=document.createElement('img');
+    img.src=zipCards[card.file];
+    img.alt=cardName(card.file);
+    const label=document.createElement('div');
+    label.className='card-name';
+    label.innerHTML=`${escapeHtml(spreadInfo[spread].positions[i])}<br><b>${escapeHtml(cardName(card.file))}</b>${card.reversed?'<br>Перевёрнутая':''}`;
+    wrap.appendChild(img);
+    wrap.appendChild(label);
+    wrap.addEventListener('click',()=>showInterpretation(i));
     grid.appendChild(wrap);
+    wrap.style.animationDelay=(i*.1)+'s';
+    wrap.classList.add('card-reveal');
   });
 
   document.getElementById('saveReading').classList.remove('hidden');
   document.getElementById('backToSummary').classList.add('hidden');
-
   showSummary();
 }
 
-function showSummary() {
-  document.querySelectorAll('.drawn').forEach(el => el.classList.remove('selected'));
-
-  const box = document.getElementById('interpretation');
-  box.classList.remove('hidden');
-
-  document.getElementById('backToSummary').classList.add('hidden');
-
-  const info = spreadInfo[spread];
-
-  const names = picked.map((c,i) =>
-    `${info.positions[i]} — ${cardName(c.file)}${c.reversed ? ' (перевёрнутая)' : ''}`
-  );
-
-  const first = picked[0];
-  const last = picked[picked.length-1];
-
-  let synthesis =
-    'Расклад предлагает смотреть на ситуацию целиком: отдельные события здесь связаны между собой, а не существуют по отдельности.';
-
-  if (picked.length >= 3) {
-    synthesis =
-      `Начало расклада показывает, откуда растёт ситуация (${cardName(first.file)}), центральные карты раскрывают, что происходит сейчас, а последняя позиция подсказывает возможное направление (${cardName(last.file)}). Смысл не в гарантированном предсказании, а в том, чтобы увидеть связь между этими этапами.`;
-  }
-
-  box.innerHTML = `
-    <h3>Общий вывод расклада</h3>
-    <div class="eyebrow">${topicText.toUpperCase()}</div>
-    <p>
-      ${questionText ? `Твой вопрос: «${questionText}». ` : ''}
-      ${synthesis}
-    </p>
-    <p>
-      <b>Что выпало:</b><br>
-      ${names.join('<br>')}
-    </p>
-    <p class="muted">
-      Нажми на любую карту, чтобы открыть её отдельную трактовку.
-      Общий вывод можно вернуть кнопкой под раскладом.
-    </p>
-  `;
-}
-
-function showInterpretation(i) {
-  document.querySelectorAll('.drawn').forEach((el,j) =>
-    el.classList.toggle('selected', i === j)
-  );
-
-  const c = picked[i];
-  const name = cardName(c.file);
-  const position = spreadInfo[spread].positions[i];
-  const box = document.getElementById('interpretation');
-
+function showInterpretation(i){
+  document.querySelectorAll('.drawn').forEach((el,j)=>el.classList.toggle('selected',i===j));
+  const card=picked[i];
+  const data=getCardData(card,i);
+  const position=spreadInfo[spread].positions[i];
+  const box=document.getElementById('interpretation');
   box.classList.remove('hidden');
   document.getElementById('backToSummary').classList.remove('hidden');
 
-  box.innerHTML = `
-    <h3>${name}${c.reversed ? ' · перевёрнутая' : ''}</h3>
-    <div class="eyebrow">${position.toUpperCase()}</div>
-    <p>
-      В позиции «${position}» карта ${name.toLowerCase()}
-      относится к теме «${topicText.toLowerCase()}».
-      ${c.reversed
-        ? 'Перевёрнутое положение предлагает обратить внимание на внутреннее напряжение, задержку или ситуацию, которая пока не проявляется открыто.'
-        : 'Прямое положение подчёркивает активное проявление темы карты и возможность осознанно с ней взаимодействовать.'
-      }
-    </p>
-    <p class="muted">
-      Это базовая трактовка текущей версии.
-      Полные индивидуальные значения всех 78 карт и их сочетаний
-      будут добавлены следующим этапом.
-    </p>
+  box.innerHTML=`
+    <h3>${escapeHtml(data.name)}${card.reversed?' · перевёрнутая':''}</h3>
+    <div class="eyebrow">${escapeHtml(position.toUpperCase())}</div>
+    <h4>Значение карты</h4>
+    <p>${escapeHtml(data.meaning)}</p>
+    <h4>Что это значит в твоём вопросе</h4>
+    <p>${escapeHtml(data.lens)}</p>
+    <h4>Почему карта стоит именно здесь</h4>
+    <p>${escapeHtml(data.position)}</p>
+    <h4>Теневая сторона</h4>
+    <p>${escapeHtml(data.shadow)}</p>
+    <h4>На что обратить внимание</h4>
+    <p>${escapeHtml(data.advice)}</p>
+    <p class="muted">Трактовка символическая: она помогает исследовать ситуацию, а не устанавливает чужие мысли или гарантирует будущее.</p>
+  `;
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function getSuit(file){
+  if(file.startsWith('Cups')) return 'Cups';
+  if(file.startsWith('Pents')) return 'Pents';
+  if(file.startsWith('Swords')) return 'Swords';
+  if(file.startsWith('Wands')) return 'Wands';
+  return 'Major';
+}
+
+function summaryPattern(){
+  const suits={Cups:0,Pents:0,Swords:0,Wands:0,Major:0};
+  let reversed=0;
+  picked.forEach(c=>{
+    suits[getSuit(c.file)]++;
+    if(c.reversed) reversed++;
+  });
+  const max=Math.max(...Object.values(suits));
+  const dominant=Object.entries(suits).filter(([k,v])=>v===max&&v>0).map(([k])=>k);
+  const suitText={
+    Cups:'эмоции, близость и отношения',
+    Pents:'практические вопросы, ресурсы и устойчивость',
+    Swords:'мысли, решения, разговоры и внутренние конфликты',
+    Wands:'инициатива, энергия, желания и движение',
+    Major:'крупные внутренние перемены и важные жизненные темы'
+  };
+  let text='';
+
+  if(max>=2){
+    text+=`В раскладе особенно заметна тема ${dominant.map(s=>suitText[s]).join(' и ')}. `;
+  }else{
+    text+='Карты затрагивают несколько разных сторон ситуации, поэтому здесь важно не сводить всё к одной причине. ';
+  }
+
+  if(reversed===0) text+='Все карты вышли прямо: энергия расклада проявляется достаточно открыто, и главные процессы можно рассматривать без акцента на скрытом сопротивлении. ';
+  else if(reversed===picked.length) text+='Все карты перевёрнуты: расклад особенно подчёркивает внутреннюю сторону происходящего, задержки и необходимость сначала разобраться с собственным отношением к ситуации. ';
+  else if(reversed>=Math.ceil(picked.length/2)) text+=`Перевёрнутых карт много (${reversed} из ${picked.length}): значительная часть процесса может пока оставаться внутри — в сомнениях, невысказанных чувствах или незавершённых решениях. `;
+  else if(reversed>0) text+=`Есть ${reversed} перевёрнутых карт: рядом с открытыми возможностями присутствуют внутренние ограничения или темы, которые ещё не проявились полностью. `;
+
+  const majors=suits.Major;
+  if(majors>=3) text+='Большое количество Старших арканов говорит о значимости периода: вопрос затрагивает не только отдельное событие, но и более глубокие жизненные установки. ';
+  else if(majors===0) text+='Преобладают Младшие арканы: сейчас многое зависит от конкретных решений, привычек и повседневных действий. ';
+
+  return text;
+}
+
+function cardProgression(){
+  const info=spreadInfo[spread];
+  return picked.map((c,i)=>{
+    const d=getCardData(c,i);
+    return `<p><b>${escapeHtml(info.positions[i])} — ${escapeHtml(d.name)}:</b> ${escapeHtml(d.meaning)}</p>`;
+  }).join('');
+}
+
+function makeSynthesis(){
+  const first=getCardData(picked[0],0);
+  const last=getCardData(picked[picked.length-1],picked.length-1);
+  const count=picked.length;
+  let intro='Расклад показывает не отдельный случайный эпизод, а несколько связанных сторон одной ситуации. ';
+
+  if(spread==='three'){
+    intro='Здесь прослеживается последовательность: прошлый опыт повлиял на нынешнее положение, а нынешняя позиция формирует возможное продолжение истории. ';
+  }else if(spread==='love'){
+    intro='В отношениях важно разделить твою позицию, возможную позицию другого человека и то, что реально происходит между вами. Карты показывают динамику контакта, а не дают достоверного доступа к чужим мыслям. ';
+  }else if(spread==='hidden'){
+    intro='Этот расклад предлагает посмотреть глубже очевидного: на то, что остаётся незамеченным, что может вытесняться и какой новый взгляд способен изменить восприятие ситуации. ';
+  }else if(spread==='celtic'){
+    intro='Кельтский крест раскрывает ситуацию с нескольких сторон: от её основы и препятствий до внешних обстоятельств, ожиданий и возможного итога. ';
+  }else if(spread==='one'){
+    intro='Одна карта здесь выступает главным фокусом вопроса: она не обещает конкретное событие, а показывает тему, которую полезно рассмотреть внимательнее. ';
+  }
+
+  let ending='';
+  if(count>1){
+    ending=`В финальной позиции находится ${last.name}. ${last.meaning} `;
+  }
+
+  const question=questionText
+    ?`Вопрос, с которым ты пришёл: «${escapeHtml(questionText)}». `
+    :'';
+
+  const advice=last.advice;
+
+  return `
+    <h3>Общий вывод расклада</h3>
+    <div class="eyebrow">${escapeHtml(topicText.toUpperCase())}</div>
+    <p>${question}${intro}</p>
+    <h4>Как разворачивается история</h4>
+    ${cardProgression()}
+    <h4>Главная динамика расклада</h4>
+    <p>${summaryPattern()}</p>
+    <h4>К чему стоит присмотреться</h4>
+    <p>${ending}</p>
+    <h4>Главный совет расклада</h4>
+    <p>${escapeHtml(advice)}</p>
+    <p class="muted">Это символическая интерпретация сочетания карт, а не неизбежный прогноз. Важнее всего — соотнести её с фактами и собственными ощущениями.</p>
   `;
 }
 
-function finishReading() {
-  if (readingSaved) return;
-
-  const history = JSON.parse(localStorage.getItem('fateHistory') || '[]');
-
-  history.unshift({
-    date: new Date().toLocaleString('ru-RU'),
-    topic: topicText,
-    question: questionText,
-    spread: spreadInfo[spread].title,
-    cards: picked.map((c,i) => ({
-      name: cardName(c.file),
-      file: c.file,
-      reversed: c.reversed,
-      position: spreadInfo[spread].positions[i]
-    }))
-  });
-
-  localStorage.setItem('fateHistory', JSON.stringify(history.slice(0,50)));
-
-  readingSaved = true;
-  document.getElementById('saveReading').textContent = 'Сохранено ✓';
+function showSummary(){
+  document.querySelectorAll('.drawn').forEach(el=>el.classList.remove('selected'));
+  const box=document.getElementById('interpretation');
+  box.classList.remove('hidden');
+  document.getElementById('backToSummary').classList.add('hidden');
+  box.innerHTML=makeSynthesis();
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-function renderHistory() {
-  const list = document.getElementById('historyList');
-  const history = JSON.parse(localStorage.getItem('fateHistory') || '[]');
+function finishReading(){
+  if(readingSaved) return;
+  const history=JSON.parse(localStorage.getItem('fateHistory')||'[]');
+  const summary=makeSynthesis();
 
-  if (!history.length) {
-    list.innerHTML = `
-      <div class="history-entry">
-        Пока пусто ♡
-        <p class="muted">
-          Сделай первый расклад, и он появится здесь.
-        </p>
-      </div>
-    `;
+  history.unshift({
+    date:new Date().toLocaleString('ru-RU'),
+    topic:topicText,
+    question:questionText,
+    spread:spreadInfo[spread].title,
+    cards:picked.map((c,i)=>({
+      name:cardName(c.file),
+      file:c.file,
+      reversed:c.reversed,
+      position:spreadInfo[spread].positions[i],
+      meaning:getCardData(c,i).meaning
+    })),
+    summary
+  });
+
+  localStorage.setItem('fateHistory',JSON.stringify(history.slice(0,50)));
+  readingSaved=true;
+  document.getElementById('saveReading').textContent='Сохранено ✓';
+}
+
+function renderHistory(){
+  const list=document.getElementById('historyList');
+  const history=JSON.parse(localStorage.getItem('fateHistory')||'[]');
+  if(!history.length){
+    list.innerHTML='<div class="history-entry">Пока пусто ♡<p class="muted">Сделай первый расклад, и он появится здесь.</p></div>';
     return;
   }
-
-  list.innerHTML = history.map(h => `
+  list.innerHTML=history.map(h=>`
     <div class="history-entry">
-      <b>${h.spread}</b>
-      <div class="muted">${h.date} · ${h.topic}</div>
-      <p>
-        ${h.cards.map(c => c.name + (c.reversed ? ' ↕' : '')).join(' · ')}
-      </p>
-      ${h.question ? `<div class="muted">«${h.question}»</div>` : ''}
+      <b>${escapeHtml(h.spread)}</b>
+      <div class="muted">${escapeHtml(h.date)} · ${escapeHtml(h.topic)}</div>
+      <p>${h.cards.map(c=>escapeHtml(c.name)+(c.reversed?' ↕':'')).join(' · ')}</p>
+      ${h.question?`<div class="muted">«${escapeHtml(h.question)}»</div>`:''}
     </div>
   `).join('');
 }
 </script>
-
 </body>
 </html>
