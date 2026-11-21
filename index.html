@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -20,9 +21,7 @@
   --cream: #f5edf2;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -51,13 +50,8 @@ header {
   letter-spacing: 1.5px;
 }
 
-.page {
-  display: none;
-}
-
-.page.active {
-  display: block;
-}
+.page { display: none; }
+.page.active { display: block; }
 
 .hero {
   padding: 26px 21px;
@@ -67,8 +61,7 @@ header {
   margin-bottom: 30px;
 }
 
-.hero small,
-.eyebrow {
+.hero small, .eyebrow {
   color: var(--pink);
   letter-spacing: 2px;
   font-size: 10px;
@@ -80,8 +73,7 @@ header {
   margin: 17px 0 12px;
 }
 
-.hero p,
-.muted {
+.hero p, .muted {
   color: var(--muted);
   font-size: 13px;
   line-height: 1.6;
@@ -99,8 +91,7 @@ header {
   gap: 11px;
 }
 
-.item,
-.choice {
+.item, .choice {
   background: var(--panel);
   border: 1px solid #382b38;
   border-radius: 15px;
@@ -108,9 +99,7 @@ header {
   cursor: pointer;
 }
 
-.item:active,
-.choice:active,
-.primary:active {
+.item:active, .choice:active, .primary:active {
   transform: scale(.985);
 }
 
@@ -119,8 +108,7 @@ header {
   margin: 0 0 7px;
 }
 
-.item p,
-.choice p {
+.item p, .choice p {
   font-size: 12px;
   color: var(--muted);
   margin: 0;
@@ -146,13 +134,9 @@ h1 {
   margin: 8px 0 10px;
 }
 
-h2 {
-  font-size: 19px;
-}
+h2 { font-size: 19px; }
 
-.choice {
-  margin: 11px 0;
-}
+.choice { margin: 11px 0; }
 
 .choice h3 {
   margin: 0 0 7px;
@@ -179,9 +163,7 @@ h2 {
   border: 1px solid var(--line);
 }
 
-input,
-textarea,
-select {
+input, textarea, select {
   width: 100%;
   background: #1b1720;
   border: 1px solid var(--line);
@@ -214,9 +196,7 @@ select {
   cursor: pointer;
 }
 
-.bottom button.active {
-  color: #e5a1bd;
-}
+.bottom button.active { color: #e5a1bd; }
 
 .status {
   font-size: 12px;
@@ -228,8 +208,7 @@ select {
 /* ИГРОВОЙ СТОЛ */
 
 .table-scene {
-  background:
-    radial-gradient(ellipse at center, #49334f 0%, #30203d 60%, #211727 100%);
+  background: radial-gradient(ellipse at center, #49334f 0%, #30203d 60%, #211727 100%);
   border: 1px solid #624967;
   border-radius: 20px;
   padding: 18px 12px 22px;
@@ -256,13 +235,18 @@ select {
   position: relative;
 }
 
-/* ОБЩЕЕ ИЗОБРАЖЕНИЕ РУБАШКИ */
+/* РУБАШКА КАРТЫ */
 
 .card-back-art {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 5 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  object-fit: fill !important;
+  border: 0 !important;
   border-radius: inherit;
   pointer-events: none;
   user-select: none;
@@ -277,6 +261,7 @@ select {
   margin: 28px auto 24px;
   position: relative;
   cursor: pointer;
+  isolation: isolate;
 }
 
 .deck-stack:before,
@@ -284,6 +269,7 @@ select {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 0;
   border-radius: 9px;
   border: 1px solid #c5a9c8;
   background: linear-gradient(145deg, #49334f, #211727);
@@ -301,12 +287,17 @@ select {
 .deck-back {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
   border-radius: 9px;
   border: 1px solid #d5b9d6;
   background: #30203d;
   box-shadow: 0 8px 18px #100b15aa;
   overflow: hidden;
+  isolation: isolate;
+}
+
+.deck-back .card-back-art {
+  z-index: 3 !important;
 }
 
 /* ВЕЕР */
@@ -336,58 +327,35 @@ select {
   cursor: pointer;
   position: relative;
   transform-origin: 50% 100%;
-  transition:
-    transform .42s cubic-bezier(.2,.8,.2,1),
-    filter .3s,
-    opacity .3s;
+  transition: transform .42s cubic-bezier(.2,.8,.2,1), filter .3s, opacity .3s;
   overflow: hidden;
   padding: 0;
+  isolation: isolate;
 }
 
 .fan-card .card-back-art {
-  position: absolute;
-  inset: 0;
+  z-index: 2 !important;
 }
 
-.fan-card:nth-child(1) {
-  transform: rotate(-15deg) translateY(13px);
-}
+.fan-card:nth-child(1) { transform: rotate(-15deg) translateY(13px); }
+.fan-card:nth-child(2) { transform: rotate(-8deg) translateY(5px); }
+.fan-card:nth-child(3) { transform: rotate(0); }
+.fan-card:nth-child(4) { transform: rotate(8deg) translateY(5px); }
+.fan-card:nth-child(5) { transform: rotate(15deg) translateY(13px); }
 
-.fan-card:nth-child(2) {
-  transform: rotate(-8deg) translateY(5px);
-}
-
-.fan-card:nth-child(3) {
-  transform: rotate(0);
-}
-
-.fan-card:nth-child(4) {
-  transform: rotate(8deg) translateY(5px);
-}
-
-.fan-card:nth-child(5) {
-  transform: rotate(15deg) translateY(13px);
-}
-
-.fan-card:hover {
-  filter: brightness(1.15);
-}
+.fan-card:hover { filter: brightness(1.15); }
 
 .fan-card.picked-now {
   transform: translateY(-30px) scale(1.1) !important;
   filter: brightness(1.3);
-  box-shadow:
-    0 0 0 2px #f0c6dc,
-    0 0 25px #e6a7cb;
+  box-shadow: 0 0 0 2px #f0c6dc, 0 0 25px #e6a7cb;
   opacity: .25;
   pointer-events: none;
 }
 
-.fan-card:active {
-  filter: brightness(1.3);
-}
+.fan-card:active { filter: brightness(1.3); }
 
-/* ВЫБРАННЫЕ ЗАКРЫТЫЕ КАРТЫ */
+/* ВЫБРАННЫЕ КАРТЫ */
 
 .picked-tray {
   display: flex;
@@ -408,23 +376,20 @@ select {
   box-shadow: 0 5px 12px #100b15aa;
   position: relative;
   overflow: hidden;
+  isolation: isolate;
   animation: pickIn .42s cubic-bezier(.2,.8,.2,1);
+}
+
+.picked-back .card-back-art {
+  z-index: 2 !important;
 }
 
 /* АНИМАЦИИ */
 
 @keyframes pickIn {
-  0% {
-    transform: translateY(-28px) rotate(-8deg) scale(.7);
-    opacity: 0;
-  }
-  70% {
-    transform: translateY(4px) rotate(2deg) scale(1.05);
-  }
-  100% {
-    transform: translateY(0) rotate(0) scale(1);
-    opacity: 1;
-  }
+  0% { transform: translateY(-28px) rotate(-8deg) scale(.7); opacity: 0; }
+  70% { transform: translateY(4px) rotate(2deg) scale(1.05); }
+  100% { transform: translateY(0) rotate(0) scale(1); opacity: 1; }
 }
 
 .card-reveal {
@@ -433,14 +398,8 @@ select {
 }
 
 @keyframes cardReveal {
-  0% {
-    opacity: 0;
-    transform: translateY(24px) rotateY(90deg) scale(.85);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) rotateY(0) scale(1);
-  }
+  0% { opacity: 0; transform: translateY(24px) rotateY(90deg) scale(.85); }
+  100% { opacity: 1; transform: translateY(0) rotateY(0) scale(1); }
 }
 
 .drawn-grid {
@@ -507,9 +466,7 @@ select {
   font-size: 13px;
 }
 
-.hidden {
-  display: none !important;
-}
+.hidden { display: none !important; }
 
 @keyframes shuffle {
   0% { transform: translateY(0) rotate(0); }
@@ -518,25 +475,19 @@ select {
   100% { transform: translateY(0) rotate(0); }
 }
 
-.shuffling {
-  animation: shuffle .55s ease-in-out 3;
-}
+.shuffling { animation: shuffle .55s ease-in-out 3; }
 
 @media (min-width: 600px) {
   body {
     max-width: 600px;
     margin: auto;
   }
-
-  .drawn {
-    max-width: 130px;
-  }
+  .drawn { max-width: 130px; }
 }
 </style>
 </head>
 
 <body>
-
 <header>
   <div class="logo">FATE.exe</div>
   <div class="version">ТВОЙ ЛИЧНЫЙ ОРАКУЛ</div>
@@ -552,7 +503,6 @@ select {
   </div>
 
   <div class="section-title">ВЫБЕРИ СВОЙ СПОСОБ</div>
-
   <div class="menu">
     <div class="item" onclick="showPage('tarot')">
       <div class="emoji">♠</div>
@@ -644,15 +594,9 @@ select {
   <div id="freeCount" class="hidden">
     <label>Количество карт</label>
     <select id="freeNumber">
-      <option>1</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5</option>
-      <option>6</option>
-      <option>7</option>
-      <option>8</option>
-      <option>9</option>
+      <option>1</option><option>2</option><option>3</option>
+      <option>4</option><option>5</option><option>6</option>
+      <option>7</option><option>8</option><option>9</option>
       <option>10</option>
     </select>
   </div>
@@ -679,9 +623,8 @@ select {
         <div class="deck-back">
           <img
             class="card-back-art"
-            src="./FATE_card_back.png?v=2"
+            src="https://seqxer.github.io/arcana-mini-app/FATE_card_back.png?v=3"
             alt="Рубашка карт FATE.exe"
-            onerror="this.style.display='none'; document.getElementById('deckStatus').textContent='Не найдена FATE_card_back.png — проверь имя файла в GitHub';"
           >
         </div>
       </div>
@@ -702,10 +645,7 @@ select {
 
       <div class="fan" id="fan"></div>
       <div class="status" id="drawStatus" style="text-align:center"></div>
-
-      <div class="picked-tray" id="pickedTray"
-           aria-label="Уже выбранные закрытые карты">
-      </div>
+      <div class="picked-tray" id="pickedTray" aria-label="Уже выбранные закрытые карты"></div>
     </div>
 
     <div id="resultArea" class="hidden">
@@ -715,15 +655,11 @@ select {
 
   <div id="interpretation" class="interpretation hidden"></div>
 
-  <button id="backToSummary"
-          class="primary secondary hidden"
-          onclick="showSummary()">
+  <button id="backToSummary" class="primary secondary hidden" onclick="showSummary()">
     ← Общий вывод расклада
   </button>
 
-  <button id="saveReading"
-          class="primary secondary hidden"
-          onclick="finishReading()">
+  <button id="saveReading" class="primary secondary hidden" onclick="finishReading()">
     Сохранить расклад
   </button>
 </section>
@@ -755,7 +691,7 @@ tg?.ready();
 tg?.expand();
 
 const ZIP_URL = './FATE_Rider_Waite_78_cards.zip';
-const BACK_URL = './FATE_card_back.png?v=2';
+const BACK_URL = 'https://seqxer.github.io/arcana-mini-app/FATE_card_back.png?v=3';
 
 const cardFiles = [
   '00_Fool.jpg',
@@ -821,33 +757,18 @@ const suitRu = {
 
 const rankRu = [
   '',
-  'Туз',
-  'Двойка',
-  'Тройка',
-  'Четвёрка',
-  'Пятёрка',
-  'Шестёрка',
-  'Семёрка',
-  'Восьмёрка',
-  'Девятка',
-  'Десятка',
-  'Паж',
-  'Рыцарь',
-  'Королева',
-  'Король'
+  'Туз','Двойка','Тройка','Четвёрка','Пятёрка',
+  'Шестёрка','Семёрка','Восьмёрка','Девятка',
+  'Десятка','Паж','Рыцарь','Королева','Король'
 ];
 
 function cardName(file) {
   if (cardNames[file]) return cardNames[file];
-
   const m = file.match(/^(Cups|Pents|Swords|Wands)(\d\d)\.jpg$/);
-
-  return m
-    ? `${rankRu[+m[2]]} ${suitRu[m[1]]}`
-    : file;
+  return m ? `${rankRu[+m[2]]} ${suitRu[m[1]]}` : file;
 }
 
-/* Создаёт элемент с настоящим изображением рубашки */
+/* Создание рубашки с абсолютным адресом картинки */
 function createCardBack(className) {
   const card = document.createElement('div');
   card.className = className;
@@ -859,20 +780,14 @@ function createCardBack(className) {
   img.draggable = false;
 
   img.onerror = () => {
-    card.style.background =
-      'linear-gradient(145deg, #49334f, #211727)';
-    img.remove();
-
+    console.error('Не удалось загрузить рубашку:', BACK_URL);
     const status = document.getElementById('deckStatus');
-
     if (status) {
-      status.textContent =
-        'Не найдена FATE_card_back.png — проверь имя файла в GitHub';
+      status.textContent = 'Ошибка загрузки рубашки FATE.exe';
     }
   };
 
   card.appendChild(img);
-
   return card;
 }
 
@@ -891,52 +806,30 @@ const spreadInfo = {
     title:'Одна карта',
     positions:['Главная подсказка']
   },
-
   three: {
     n:3,
     title:'Прошлое · Настоящее · Будущее',
     positions:['Прошлое','Настоящее','Будущее']
   },
-
   love: {
     n:5,
     title:'Отношения',
-    positions:[
-      'Ты',
-      'Другой человек',
-      'Что между вами',
-      'Препятствие',
-      'Перспектива'
-    ]
+    positions:['Ты','Другой человек','Что между вами','Препятствие','Перспектива']
   },
-
   hidden: {
     n:3,
     title:'Скрытое',
-    positions:[
-      'За пределами очевидного',
-      'Что игнорируется',
-      'Что стоит увидеть'
-    ]
+    positions:['За пределами очевидного','Что игнорируется','Что стоит увидеть']
   },
-
   celtic: {
     n:10,
     title:'Кельтский крест',
     positions:[
-      'Суть ситуации',
-      'Препятствие',
-      'Основа',
-      'Недавнее прошлое',
-      'Возможное развитие',
-      'Ближайшее будущее',
-      'Твоя позиция',
-      'Внешние обстоятельства',
-      'Надежды и опасения',
-      'Итог'
+      'Суть ситуации','Препятствие','Основа','Недавнее прошлое',
+      'Возможное развитие','Ближайшее будущее','Твоя позиция',
+      'Внешние обстоятельства','Надежды и опасения','Итог'
     ]
   },
-
   free: {
     n:3,
     title:'Свободный расклад',
@@ -945,34 +838,21 @@ const spreadInfo = {
 };
 
 function showPage(id, button) {
-  document.querySelectorAll('.page').forEach(p =>
-    p.classList.remove('active')
-  );
-
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 
-  document.querySelectorAll('.bottom button').forEach(b =>
-    b.classList.remove('active')
-  );
+  document.querySelectorAll('.bottom button').forEach(b => b.classList.remove('active'));
 
   if (button) {
     button.classList.add('active');
   } else {
-    const map = {
-      home:0,
-      tarot:1,
-      meta:2,
-      history:3
-    };
-
+    const map = {home:0,tarot:1,meta:2,history:3};
     if (map[id] !== undefined) {
-      document.querySelectorAll('.bottom button')[map[id]]
-        .classList.add('active');
+      document.querySelectorAll('.bottom button')[map[id]].classList.add('active');
     }
   }
 
   window.scrollTo(0,0);
-
   if (id === 'history') renderHistory();
 }
 
@@ -982,10 +862,7 @@ function chooseDeck() {
 
 function selectSpread(id) {
   spread = id;
-
-  document.getElementById('freeCount')
-    .classList.toggle('hidden', id !== 'free');
-
+  document.getElementById('freeCount').classList.toggle('hidden', id !== 'free');
   showPage('setup');
 }
 
@@ -1011,18 +888,13 @@ async function loadDeck() {
 
     for (const file of cardFiles) {
       const entry = zip.file(file);
-
-      if (!entry) {
-        throw new Error('В архиве не найдена карта ' + file);
-      }
+      if (!entry) throw new Error('В архиве не найдена карта ' + file);
 
       const data = await entry.async('base64');
-
       zipCards[file] = 'data:image/jpeg;base64,' + data;
     }
 
     status.textContent = 'Колода загружена: 78 из 78 карт';
-
     return true;
 
   } catch (e) {
@@ -1042,43 +914,29 @@ async function startReading() {
     : info.n;
 
   if (spread === 'free') {
-    info.positions = Array.from(
-      {length:needed},
-      (_,i) => `Карта ${i+1}`
-    );
+    info.positions = Array.from({length:needed}, (_,i) => `Карта ${i+1}`);
   }
 
   picked = [];
   readingSaved = false;
 
-  document.getElementById('readingTopic').textContent =
-    topicText.toUpperCase();
-
-  document.getElementById('readingTitle').textContent =
-    info.title;
-
+  document.getElementById('readingTopic').textContent = topicText.toUpperCase();
+  document.getElementById('readingTitle').textContent = info.title;
   document.getElementById('readingQuestion').textContent =
-    questionText
-      ? `«${questionText}»`
-      : 'Без конкретного вопроса';
+    questionText ? `«${questionText}»` : 'Без конкретного вопроса';
 
   document.getElementById('deckArea').classList.remove('hidden');
   document.getElementById('fanArea').classList.add('hidden');
   document.getElementById('resultArea').classList.add('hidden');
-
   document.getElementById('interpretation').classList.add('hidden');
   document.getElementById('saveReading').classList.add('hidden');
   document.getElementById('backToSummary').classList.add('hidden');
 
-  document.getElementById('saveReading').textContent =
-    'Сохранить расклад';
-
+  document.getElementById('saveReading').textContent = 'Сохранить расклад';
   document.getElementById('pickedTray').innerHTML = '';
-
   document.getElementById('deckStack').classList.remove('shuffling');
 
   showPage('reading');
-
   await loadDeck();
 }
 
@@ -1093,21 +951,14 @@ function shuffleDeck() {
   deck = [...cardFiles].sort(() => Math.random() - .5);
   picked = [];
 
-  document.getElementById('deckStack')
-    .classList.add('shuffling');
-
-  document.getElementById('sceneCaption').textContent =
-    'ПЕРЕМЕШИВАЕМ';
+  document.getElementById('deckStack').classList.add('shuffling');
+  document.getElementById('sceneCaption').textContent = 'ПЕРЕМЕШИВАЕМ';
 
   setTimeout(() => {
     document.getElementById('deckArea').classList.add('hidden');
     document.getElementById('fanArea').classList.remove('hidden');
-
-    document.getElementById('sceneCaption').textContent =
-      'ВЫБЕРИ КАРТЫ';
-
+    document.getElementById('sceneCaption').textContent = 'ВЫБЕРИ КАРТЫ';
     renderFan();
-
   }, 1650);
 }
 
@@ -1119,14 +970,9 @@ function renderFan() {
 
   for (let i = 0; i < count; i++) {
     const el = document.createElement('button');
-
     el.className = 'fan-card';
     el.type = 'button';
-
-    el.setAttribute(
-      'aria-label',
-      `Вытянуть карту ${i+1}`
-    );
+    el.setAttribute('aria-label', `Вытянуть карту ${i+1}`);
 
     const img = document.createElement('img');
     img.className = 'card-back-art';
@@ -1135,17 +981,12 @@ function renderFan() {
     img.draggable = false;
 
     img.onerror = () => {
-      img.remove();
-      el.style.background =
-        'linear-gradient(145deg, #49334f, #211727)';
-
-      document.getElementById('deckStatus').textContent =
-        'Не найдена FATE_card_back.png — проверь имя файла в GitHub';
+      console.error('Не удалось загрузить рубашку:', BACK_URL);
+      document.getElementById('deckStatus').textContent = 'Ошибка загрузки рубашки FATE.exe';
     };
 
     el.appendChild(img);
     el.onclick = () => drawCard(el);
-
     fan.appendChild(el);
   }
 
@@ -1162,9 +1003,7 @@ function drawCard(button) {
     picked.length >= needed ||
     !button ||
     button.classList.contains('picked-now')
-  ) {
-    return;
-  }
+  ) return;
 
   button.classList.add('picked-now');
   button.disabled = true;
@@ -1172,21 +1011,16 @@ function drawCard(button) {
   const file = deck.pop();
   const reversed = Math.random() < .15;
 
-  picked.push({
-    file,
-    reversed
-  });
+  picked.push({file,reversed});
 
   const tray = document.getElementById('pickedTray');
   const back = createCardBack('picked-back');
-
   tray.appendChild(back);
 
   updateDrawProgress();
 
   if (picked.length === needed) {
-    document.getElementById('sceneCaption').textContent =
-      'КАРТЫ ВЫБРАНЫ';
+    document.getElementById('sceneCaption').textContent = 'КАРТЫ ВЫБРАНЫ';
 
     setTimeout(() => {
       document.getElementById('fanArea').classList.add('hidden');
@@ -1197,16 +1031,13 @@ function drawCard(button) {
 
 function revealCards() {
   document.getElementById('resultArea').classList.remove('hidden');
-
-  document.getElementById('sceneCaption').textContent =
-    'ТВОИ КАРТЫ';
+  document.getElementById('sceneCaption').textContent = 'ТВОИ КАРТЫ';
 
   const grid = document.getElementById('drawnGrid');
   grid.innerHTML = '';
 
   picked.forEach((card, i) => {
     const wrap = document.createElement('div');
-
     wrap.className = 'drawn';
 
     wrap.innerHTML = `
@@ -1219,18 +1050,13 @@ function revealCards() {
     `;
 
     const img = wrap.querySelector('img');
-
     img.src = zipCards[card.file];
-
     img.classList.add('card-reveal');
     img.style.animationDelay = (i * .12) + 's';
 
-    if (card.reversed) {
-      img.style.transform = 'rotate(180deg)';
-    }
+    if (card.reversed) img.style.transform = 'rotate(180deg)';
 
     wrap.onclick = () => showInterpretation(i);
-
     grid.appendChild(wrap);
   });
 
@@ -1241,16 +1067,12 @@ function revealCards() {
 }
 
 function showSummary() {
-  document.querySelectorAll('.drawn').forEach(el =>
-    el.classList.remove('selected')
-  );
+  document.querySelectorAll('.drawn').forEach(el => el.classList.remove('selected'));
 
   const box = document.getElementById('interpretation');
-
   box.classList.remove('hidden');
 
-  document.getElementById('backToSummary')
-    .classList.add('hidden');
+  document.getElementById('backToSummary').classList.add('hidden');
 
   const info = spreadInfo[spread];
 
@@ -1295,21 +1117,14 @@ function showInterpretation(i) {
   const c = picked[i];
   const name = cardName(c.file);
   const position = spreadInfo[spread].positions[i];
-
   const box = document.getElementById('interpretation');
 
   box.classList.remove('hidden');
-
-  document.getElementById('backToSummary')
-    .classList.remove('hidden');
+  document.getElementById('backToSummary').classList.remove('hidden');
 
   box.innerHTML = `
     <h3>${name}${c.reversed ? ' · перевёрнутая' : ''}</h3>
-
-    <div class="eyebrow">
-      ${position.toUpperCase()}
-    </div>
-
+    <div class="eyebrow">${position.toUpperCase()}</div>
     <p>
       В позиции «${position}» карта ${name.toLowerCase()}
       относится к теме «${topicText.toLowerCase()}».
@@ -1318,7 +1133,6 @@ function showInterpretation(i) {
         : 'Прямое положение подчёркивает активное проявление темы карты и возможность осознанно с ней взаимодействовать.'
       }
     </p>
-
     <p class="muted">
       Это базовая трактовка текущей версии.
       Полные индивидуальные значения всех 78 карт и их сочетаний
@@ -1330,16 +1144,13 @@ function showInterpretation(i) {
 function finishReading() {
   if (readingSaved) return;
 
-  const history = JSON.parse(
-    localStorage.getItem('fateHistory') || '[]'
-  );
+  const history = JSON.parse(localStorage.getItem('fateHistory') || '[]');
 
   history.unshift({
     date: new Date().toLocaleString('ru-RU'),
     topic: topicText,
     question: questionText,
     spread: spreadInfo[spread].title,
-
     cards: picked.map((c,i) => ({
       name: cardName(c.file),
       file: c.file,
@@ -1348,23 +1159,15 @@ function finishReading() {
     }))
   });
 
-  localStorage.setItem(
-    'fateHistory',
-    JSON.stringify(history.slice(0,50))
-  );
+  localStorage.setItem('fateHistory', JSON.stringify(history.slice(0,50)));
 
   readingSaved = true;
-
-  document.getElementById('saveReading').textContent =
-    'Сохранено ✓';
+  document.getElementById('saveReading').textContent = 'Сохранено ✓';
 }
 
 function renderHistory() {
   const list = document.getElementById('historyList');
-
-  const history = JSON.parse(
-    localStorage.getItem('fateHistory') || '[]'
-  );
+  const history = JSON.parse(localStorage.getItem('fateHistory') || '[]');
 
   if (!history.length) {
     list.innerHTML = `
@@ -1375,28 +1178,17 @@ function renderHistory() {
         </p>
       </div>
     `;
-
     return;
   }
 
   list.innerHTML = history.map(h => `
     <div class="history-entry">
       <b>${h.spread}</b>
-
-      <div class="muted">
-        ${h.date} · ${h.topic}
-      </div>
-
+      <div class="muted">${h.date} · ${h.topic}</div>
       <p>
-        ${h.cards.map(c =>
-          c.name + (c.reversed ? ' ↕' : '')
-        ).join(' · ')}
+        ${h.cards.map(c => c.name + (c.reversed ? ' ↕' : '')).join(' · ')}
       </p>
-
-      ${h.question
-        ? `<div class="muted">«${h.question}»</div>`
-        : ''
-      }
+      ${h.question ? `<div class="muted">«${h.question}»</div>` : ''}
     </div>
   `).join('');
 }
