@@ -1,0 +1,351 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#100e13">
+<title>ARCANA — твой личный оракул</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #100e13;
+  color: #f5edf2;
+  font-family: Arial, sans-serif;
+  padding: 25px 20px 100px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 42px;
+}
+
+.logo {
+  font-size: 29px;
+  font-weight: 900;
+  letter-spacing: 5px;
+}
+
+.version {
+  font-size: 9px;
+  color: #d38da9;
+  letter-spacing: 1px;
+}
+
+.hero {
+  padding: 28px 22px;
+  border: 1px solid #49303f;
+  border-radius: 18px;
+  background: linear-gradient(145deg,#30202e,#17131c 65%,#251824);
+  margin-bottom: 35px;
+}
+
+.hero small {
+  color: #d99ab5;
+  letter-spacing: 3px;
+  font-size: 10px;
+}
+
+.hero h1 {
+  font-size: 32px;
+  line-height: 1.1;
+  margin: 18px 0 12px;
+}
+
+.hero p {
+  color: #b8aab5;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.section-title {
+  font-size: 12px;
+  color: #a995a5;
+  letter-spacing: 2px;
+  margin-bottom: 15px;
+}
+
+.menu {
+  display: grid;
+  gap: 12px;
+}
+
+.item {
+  background: #1c1820;
+  border: 1px solid #382b38;
+  border-radius: 15px;
+  padding: 20px;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.item:active {
+  transform: scale(.98);
+}
+
+.item h2 {
+  font-size: 18px;
+  margin: 0 0 7px;
+}
+
+.item p {
+  font-size: 12px;
+  color: #a99ba8;
+  margin: 0;
+}
+
+.emoji {
+  font-size: 25px;
+  margin-bottom: 13px;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+.back {
+  color: #d99ab5;
+  border: none;
+  background: none;
+  padding: 0;
+  margin-bottom: 25px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #17131a;
+  border-top: 1px solid #382b38;
+  display: flex;
+  justify-content: space-around;
+  padding: 15px 5px 25px;
+}
+
+.bottom button {
+  color: #a99ba8;
+  background: none;
+  border: none;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.bottom button.active {
+  color: #e5a1bd;
+}
+
+.card {
+  padding: 22px;
+  margin: 12px 0;
+  border: 1px solid #49303f;
+  border-radius: 14px;
+  background: #211923;
+  cursor: pointer;
+}
+
+.card h3 {
+  margin: 0 0 8px;
+}
+
+.card p {
+  color: #b8aab5;
+  font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">ARCANA</div>
+  <div class="version">ТВОЙ ЛИЧНЫЙ ОРАКУЛ</div>
+</header>
+
+<main>
+
+<section id="home" class="page active">
+
+  <div class="hero">
+    <small>✦ ВСЕЛЕННАЯ НА СВЯЗИ</small>
+    <h1>Ну что,<br>посмотрим?</h1>
+    <p>Карты уже перемешаны. Осталось понять, зачем ты сюда пришёл.</p>
+  </div>
+
+  <div class="section-title">ВЫБЕРИ СВОЙ СПОСОБ</div>
+
+  <div class="menu">
+
+    <div class="item" onclick="showPage('tarot')">
+      <div class="emoji">♠</div>
+      <h2>Таро</h2>
+      <p>Колоды, расклады и попытки разобраться в происходящем</p>
+    </div>
+
+    <div class="item" onclick="showPage('meta')">
+      <div class="emoji">✧</div>
+      <h2>Метафорические карты</h2>
+      <p>Посмотрим, что там у тебя в подсознании</p>
+    </div>
+
+    <div class="item" onclick="showPage('history')">
+      <div class="emoji">⌁</div>
+      <h2>Моя история</h2>
+      <p>Все твои предыдущие расклады</p>
+    </div>
+
+  </div>
+</section>
+
+<section id="tarot" class="page">
+
+  <button class="back" onclick="showPage('home')">← Назад</button>
+
+  <h1>Таро</h1>
+  <p>Сначала выбери колоду. Потом разберёмся с остальным.</p>
+
+  <div class="card" onclick="showPage('spreads')">
+    <h3>☾ Классический Уэйт</h3>
+    <p>78 карт · Классическая система</p>
+  </div>
+
+  <div class="card" onclick="showPage('spreads')">
+    <h3>✦ ARCANA Original</h3>
+    <p>Авторская колода приложения</p>
+  </div>
+
+  <div class="card">
+    <h3>＋ Другие колоды</h3>
+    <p>Библиотека будет пополняться</p>
+  </div>
+
+</section>
+
+<section id="spreads" class="page">
+
+  <button class="back" onclick="showPage('tarot')">← Назад</button>
+
+  <h1>Выбери расклад</h1>
+
+  <div class="card">
+    <h3>Одна карта</h3>
+    <p>Короткий ответ или подсказка</p>
+  </div>
+
+  <div class="card">
+    <h3>Прошлое · Настоящее · Будущее</h3>
+    <p>Три карты для понимания ситуации</p>
+  </div>
+
+  <div class="card">
+    <h3>Отношения</h3>
+    <p>Что происходит между вами?</p>
+  </div>
+
+  <div class="card">
+    <h3>Кельтский крест</h3>
+    <p>Большой расклад на десять карт</p>
+  </div>
+
+</section>
+
+<section id="meta" class="page">
+
+  <button class="back" onclick="showPage('home')">← Назад</button>
+
+  <h1>Метафорические карты</h1>
+  <p>Не ищем предсказаний. Ищем неожиданные мысли.</p>
+
+  <div class="card">
+    <h3>Слепой выбор</h3>
+    <p>Вытяни случайную картинку</p>
+  </div>
+
+  <div class="card">
+    <h3>Что я чувствую?</h3>
+    <p>Исследуй своё состояние</p>
+  </div>
+
+  <div class="card">
+    <h3>Теневая сторона</h3>
+    <p>Взгляни на то, что обычно обходишь стороной</p>
+  </div>
+
+</section>
+
+<section id="history" class="page">
+
+  <button class="back" onclick="showPage('home')">← Назад</button>
+
+  <h1>Моя история</h1>
+  <p>Здесь будут храниться твои расклады и любимые карты.</p>
+
+  <div class="card">
+    <h3>Пока пусто ♡</h3>
+    <p>Самое время сделать первый расклад.</p>
+  </div>
+
+</section>
+
+</main>
+
+<nav class="bottom">
+  <button class="active" onclick="showPage('home',this)">⌂ Главная</button>
+  <button onclick="showPage('tarot',this)">♠ Таро</button>
+  <button onclick="showPage('meta',this)">✧ Карты</button>
+  <button onclick="showPage('history',this)">♡ История</button>
+</nav>
+
+<script>
+
+const tg = window.Telegram?.WebApp;
+
+tg?.ready();
+tg?.expand();
+
+function showPage(id, button) {
+
+  document.querySelectorAll('.page').forEach(page => {
+    page.classList.remove('active');
+  });
+
+  document.getElementById(id).classList.add('active');
+
+  document.querySelectorAll('.bottom button').forEach(btn => {
+    btn.classList.remove('active');
+  });
+
+  if (button) {
+    button.classList.add('active');
+  } else {
+    const index = {
+      home: 0,
+      tarot: 1,
+      meta: 2,
+      history: 3
+    };
+
+    document.querySelectorAll('.bottom button')[index[id]]?.classList.add('active');
+  }
+
+  window.scrollTo(0, 0);
+}
+
+</script>
+
+</body>
+</html>
